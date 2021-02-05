@@ -2,13 +2,15 @@
 #By: Nick Meling and Matt Egts
 
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QComboBox, QPushButton, QWidget, QDesktopWidget
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
 
 def window():
 #Window set up
     app=QApplication(sys.argv)
     win=QWidget()
-    win.setGeometry(400,150,700,700)
+    win.setGeometry(400,150,700,500)
     win.setWindowTitle("TFRRS Visualizer")
     win.setStyleSheet("background-color: gray;")
 
@@ -36,7 +38,7 @@ def window():
     label2.setText('Gender')
     label2.setGeometry(250,80,100,100)
     label2.setStyleSheet('QLabel {color: Orange}')
-    #label1.setFont(QFont('Arial', 10))
+    label2.setFont(QFont('Arial', 10))
     
 
 #College Selector
