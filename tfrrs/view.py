@@ -11,6 +11,7 @@ class StartWindow(object):
     def setupStartWindow(self, MainWindow):
     #Window set up
         MainWindow.setGeometry(400,150,700,500)
+        MainWindow.setFixedSize(700,500)
         MainWindow.setWindowTitle("TFRRS Visualizer")
         MainWindow.setStyleSheet("background-color: gray;")
         self.centralwidget = QWidget(MainWindow)
@@ -155,6 +156,8 @@ class MainWindow(QMainWindow):
         self.collegeSelection.setupCollegeSelection(self)
         self.collegeSelection.nextButton.clicked.connect(self.startAthleteSelection)
         self.show()
+        self.startWindow.nextButton.clicked.connect(self.startAthleteSelection)
+
 
     def startAthleteSelection(self):
         self.athleteSelection.setupAthleteSelection(self)
