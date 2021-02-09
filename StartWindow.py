@@ -34,7 +34,7 @@ class MainWindow(QMainWindow):
     def __init__(self, parent = None):
         super(MainWindow, self).__init__(parent)
         self.startWindow = StartWindow()
-        self.collegeSelection = ColSel()
+        #self.collegeSelection = ColSel()
         self.startStartWindow()
 
     def startStartWindow(self):
