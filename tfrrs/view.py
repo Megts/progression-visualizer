@@ -40,6 +40,20 @@ class CollegeSelection(object):
         MainWindow.setStyleSheet("background-color: gray;")
         self.centralwidget = QWidget(MainWindow)
 
+    #Division Selector
+        self.division= QComboBox(self.centralwidget)
+        self.division.setGeometry(350,50,150,50)
+        self.division.addItem('Divsion 1')
+        self.division.addItem('Divison 2')
+        self.division.addItem('Division 3')
+        self.division.setStyleSheet("background-color: orange;")
+
+        self.divisionLabel= QLabel(self.centralwidget)
+        self.divisionLabel.setText('Division')
+        self.divisionLabel.setGeometry(200,50,150,50)
+        self.divisionLabel.setStyleSheet('QLabel {color: Orange}')
+        self.divisionLabel.setFont(QFont('Arial', 15))    
+
     #Gender Selector
         self.gender= QComboBox(self.centralwidget)
         self.gender.setGeometry(350,150, 150, 50)
