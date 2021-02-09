@@ -11,8 +11,10 @@ class StartWindow(object):
     def setupStartWindow(self, MainWindow):
     #Window set up
         MainWindow.setGeometry(400,150,700,500)
+        MainWindow.setFixedSize(700,500)
         MainWindow.setWindowTitle("TFRRS Visualizer")
         MainWindow.setStyleSheet("background-color: gray;")
+       
 
     #Text description
         self.descriptionLabel= QLabel(MainWindow)
@@ -131,24 +133,26 @@ class MainWindow(QMainWindow):
     def __init__(self, parent = None):
         super(MainWindow, self).__init__(parent)
         self.startWindow = StartWindow()
-        self.collegeSelection = ColSel()
+        self.collegeSelection = CollegeSelection()
         self.startStartWindow()
 
     def startStartWindow(self):
         self.startWindow.setupStart(self)
-        self.startWindow.continueButton.clicked.connect(self.startCollegeSelection)
         self.show()
+        self.startWindow.continueButton.clicked.connect(self.startCollegeSelection)
+        
 
     def startCollegeSelection(self):
         self.CollegeSelection.setupCollegeSelection(self)
-        self.startWindow.nextButton.clicked.connect(self.startAthleteSelection)
         self.show()
+        self.startWindow.nextButton.clicked.connect(self.startAthleteSelection)
+        
 
     #def startAthleteSelection(self):
         #self.AthleteSelection.setupAthleteSelection(self)
         #self.startWindow.updateButton.clicked.connect(self.
 
-if __name__ == 'main':
+if __name__ == '__main__':
     app = QApplication(sys.argv)
     w = MainWindow()
     sys.exit(app.exec_())
