@@ -143,23 +143,22 @@ class MainWindow(QMainWindow):
         self.startWindow = StartWindow()
         self.collegeSelection = CollegeSelection()
         self.athleteSelection = AthleteSelection()
-        self.startStartWindow()
+        self.startAthleteSelection()
 
     def startStartWindow(self):
         self.startWindow.setupStartWindow(self)
         self.startWindow.continueButton.clicked.connect(self.startCollegeSelection)
         self.show()
-        print("showing window")
 
 
     def startCollegeSelection(self):
         self.collegeSelection.setupCollegeSelection(self)
-        self.startWindow.nextButton.clicked.connect(self.startAthleteSelection)
+        self.collegeSelection.nextButton.clicked.connect(self.startAthleteSelection)
         self.show()
 
     def startAthleteSelection(self):
-        self.AthleteSelection.setupAthleteSelection(self)
-        self.startWindow.updateButton.clicked.connect(self.Startgraphwin)
+        self.athleteSelection.setupAthleteSelection(self)
+        #self.athleteSelection.updateButton.clicked.connect(self.Startgraphwin)
         self.show()
 
 if __name__ == '__main__':
