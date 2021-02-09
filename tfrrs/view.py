@@ -144,7 +144,7 @@ class MainWindow(QMainWindow):
         self.startWindow = StartWindow()
         self.collegeSelection = CollegeSelection()
         self.athleteSelection = AthleteSelection()
-        self.startAthleteSelection()
+        self.startStartWindow()
 
     def startStartWindow(self):
         self.startWindow.setupStartWindow(self)
