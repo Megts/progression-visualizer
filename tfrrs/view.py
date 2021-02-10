@@ -21,14 +21,15 @@ class StartWindow(object):
         self.descriptionLabel = QLabel("This program will allow you to visualize athlete statistics in Cross Country or Track and Field. You will be prompted to select NCAA Division, Gender, College, Sport, and Event.",
                                         self.centralwidget)
         self.descriptionLabel.setWordWrap(True)
+        self.descriptionLabel.setFont(QFont("Arial", 15))
         self.descriptionLabel.setAlignment(Qt.AlignCenter)
-        self.descriptionLabel.move(200,200)
+        self.descriptionLabel.setGeometry(175,200,350,100)
         self.descriptionLabel.setStyleSheet('QLabel {color: Orange}')
 
     #Button to continue to next window
         #self.continueButton= QPushButton(MainWindow)
         self.continueButton = QPushButton("Click here to continue", self.centralwidget)
-        self.continueButton.move(285,350)
+        self.continueButton.setGeometry(275,350,150,50)
         self.continueButton.setStyleSheet("background-color: orange;")
 
         MainWindow.setCentralWidget(self.centralwidget)
@@ -51,6 +52,7 @@ class CollegeSelection(object):
         self.divisionLabel= QLabel(self.centralwidget)
         self.divisionLabel.setText('Division')
         self.divisionLabel.setGeometry(200,50,150,50)
+        self.divisionLabel.setAlignment(Qt.AlignCenter)
         self.divisionLabel.setStyleSheet('QLabel {color: Orange}')
         self.divisionLabel.setFont(QFont('Arial', 15))    
 
@@ -64,6 +66,7 @@ class CollegeSelection(object):
         self.genderLabel= QLabel(self.centralwidget)
         self.genderLabel.setText('Gender')
         self.genderLabel.setGeometry(200,150,150,50)
+        self.genderLabel.setAlignment(Qt.AlignCenter)
         self.genderLabel.setStyleSheet('QLabel {color: Orange}')
         self.genderLabel.setFont(QFont('Arial', 15))
 
@@ -79,13 +82,14 @@ class CollegeSelection(object):
         self.collegeLabel= QLabel(self.centralwidget)
         self.collegeLabel.setText('College')
         self.collegeLabel.setGeometry(200,250,150,50)
+        self.collegeLabel.setAlignment(Qt.AlignCenter)
         self.collegeLabel.setStyleSheet('QLabel {color: Orange}')
         self.collegeLabel.setFont(QFont('Arial', 15))
 
     #Next Button
         self.nextButton = QPushButton(self.centralwidget)
         self.nextButton.setText("Next")
-        self.nextButton.setGeometry(275,400,100,50)
+        self.nextButton.setGeometry(300,400,100,50)
         self.nextButton.setStyleSheet("background-color: orange;")
         self.nextButton.setFont(QFont('Arial', 15))
 
@@ -100,16 +104,21 @@ class AthleteSelection(object):
 
     #Athlete Selector
         self.athlete=QListWidget(self.centralwidget)
-        self. athlete.setGeometry(300,100,150,50)
-        self. athlete.setAlternatingRowColors(True)
+        self.athlete.setGeometry(275,100,200,50)
+        self.athlete.setAlternatingRowColors(True)
         self.athlete.addItem("Nick")
         self.athlete.addItem("Matt")
         self.athlete.addItem("John")
-        self. athlete.setStyleSheet("background-color: orange;")
+        self.athlete.addItem("Brock")
+        self.athlete.addItem("Levi")
+        self.athlete.addItem("Chris")
+        self.athlete.setStyleSheet("background-color: orange;")
         #self.athlete.itemClicked(item) Need to be able to select the athletes.
         self.athleteLabel= QLabel(self.centralwidget)
-        self.athleteLabel.setText("Athlete ('s)")
-        self.athleteLabel.setGeometry(200,100,100,50)
+        self.athleteLabel.setText("Athlete(s)")
+        self.athleteLabel.setAlignment(Qt.AlignCenter)
+        self.athleteLabel.setGeometry(125,100,150,50)
+        self.athleteLabel.setAlignment(Qt.AlignCenter)
         self.athleteLabel.setStyleSheet('QLabel {color: Orange}')
         self.athleteLabel.setFont(QFont("Arial", 15))
 
@@ -123,7 +132,8 @@ class AthleteSelection(object):
 
         self.seasonLabel= QLabel(self.centralwidget)
         self.seasonLabel.setText('Season')
-        self.seasonLabel.setGeometry(25,250,50,50)
+        self.seasonLabel.setGeometry(0,250,100,50)
+        self.seasonLabel.setAlignment(Qt.AlignCenter)
         self.seasonLabel.setStyleSheet('QLabel {color: Orange}')
         self.seasonLabel.setFont(QFont("Arial", 15))
 
@@ -138,14 +148,15 @@ class AthleteSelection(object):
 
         self.eventLabel = QLabel(self.centralwidget)
         self.eventLabel.setText('Event')
-        self.eventLabel.setGeometry(400,250,50,50)
+        self.eventLabel.setGeometry(375,250,100,50)
+        self.eventLabel.setAlignment(Qt.AlignCenter)
         self.eventLabel.setStyleSheet('QLabel {color: Orange}')
         self.eventLabel.setFont(QFont("Arial", 15))
 
     #Update Button
         self.updateButton= QPushButton(self.centralwidget)
         self.updateButton.setText("Update Selection")
-        self.updateButton.setGeometry(300,400,150, 50)
+        self.updateButton.setGeometry(275,400,150, 50)
         self.updateButton.setStyleSheet("background-color: orange;")
 
         MainWindow.setCentralWidget(self.centralwidget)
