@@ -6,7 +6,6 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
-
 class StartWindow(object):
     def setupStartWindow(self, MainWindow):
     #Window set up
@@ -156,10 +155,25 @@ class AthleteSelection(object):
     #Update Button
         self.updateButton= QPushButton(self.centralwidget)
         self.updateButton.setText("Update Selection")
-        self.updateButton.setGeometry(275,400,150, 50)
+        self.updateButton.setGeometry(375,400,150, 50)
         self.updateButton.setStyleSheet("background-color: orange;")
 
         MainWindow.setCentralWidget(self.centralwidget)
+
+    #Back Button
+        self.backButton=QPushButton(self.centralwidget)
+        self.backButton.setText("Back")
+        self.backButton.setGeometry (175,400, 150, 50)
+        self.backButton.setStyleSheet("background-color: orange;")
+
+        MainWindow.setCentralWidget(self.centralwidget)
+
+class GraphViewer(object):
+    def setupGraphViewer(self, MainWindow):
+        MainWindow.setGeometry(400,150,700,500)
+        MainWindow.setWindowTitle("TFRRS Visualizer")
+        MainWindow.setStyleSheet("background-color: gray;")
+        self.centralwidget = QWidget(MainWindow)
 
 
 class MainWindow(QMainWindow):
@@ -169,6 +183,7 @@ class MainWindow(QMainWindow):
         self.startWindow = StartWindow()
         self.collegeSelection = CollegeSelection()
         self.athleteSelection = AthleteSelection()
+        self.graphViewer = GraphViewer()
         self.startStartWindow()
 
     def startStartWindow(self):
@@ -179,14 +194,19 @@ class MainWindow(QMainWindow):
 
     def startCollegeSelection(self):
         self.collegeSelection.setupCollegeSelection(self)
-        self.collegeSelection.nextButton.clicked.connect(self.startAthleteSelection)
+        self.collegeSelection.nextButton.clicked.connect(self.startAthleteSelection) 
         self.show()
 
 
     def startAthleteSelection(self):
         self.athleteSelection.setupAthleteSelection(self)
-        #self.athleteSelection.updateButton.clicked.connect(self.Startgraphwin)
+        self.athleteSelection.backButton.clicked.connect(self.startCollegeSelection)
+        self.athleteSelection.updateButton.clicked.connect(self.startGraphViewer)
         self.show()
+
+    def startGraphViewer(self):
+        self.graphViewer.setupGraphViewer(self)
+        #self.show()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
