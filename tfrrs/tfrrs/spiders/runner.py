@@ -18,6 +18,5 @@ class TFRRSspider(scrapy.Spider):
             teamName = response.xpath('//div[@class="col-lg-4"]/table/tbody/tr/td/a/text()').getall()
             teamLink = response.xpath('//div[@class="col-lg-4"]/table/tbody/tr/td/a/@href').getall()
             for i in range(len(teamName)):
-#                print(teamName[i] + "," + teamLink[i])
                 f.write(teamName[i] + "," + teamLink[i] +'\n')
         self.log('Saved file as %s' % filename)

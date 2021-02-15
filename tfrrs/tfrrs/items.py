@@ -6,7 +6,24 @@
 import scrapy
 
 
-class TfrrsItem(scrapy.Item):
+class TeamItem(scrapy.Item):
     # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+    college_id = scrapy.Field()
+    name = scrapy.Field()
+    division = scrapy.Field()
+    gender = srcapy.Field()
+
+class AthleteItem(scrapy.Item):
+    athlete_id = scrapy.Field()
+    name = scrapy.Field()
+    college_id = srapy.Field()
+
+
+
+class PerfomanceItem(scrapy.Item):
+    athlete_id = srapy.Field()
+    event_name = srapy.Field()
+    mark = srapy.Field()
+    date = srapy.Field()
+    venue = srapy.Field()
+    season = srapy.Field()
