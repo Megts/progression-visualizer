@@ -15,8 +15,8 @@ class TFRRSspider(scrapy.Spider):
     def parse(self, response):
         filename = 'NCAA_teams.csv'
         with open(filename, 'w') as f:
-            teamName = response.xpath('//div[@class="col-lg-4"]/table/tbody/tr/td/a/text()').getall()
-            teamLink = response.xpath('//div[@class="col-lg-4"]/table/tbody/tr/td/a/@href').getall()
+            teamName = response.xpath('//div[@class="col-lg-4"]/table/tbody//a/text()').getall()
+            teamLink = response.xpath('//div[@class="col-lg-4"]/table/tbody//a/@href').getall()
             for i in range(len(teamName)):
                 f.write(teamName[i] + "," + teamLink[i] +'\n')
         self.log('Saved file as %s' % filename)

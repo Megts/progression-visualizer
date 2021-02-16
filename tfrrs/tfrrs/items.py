@@ -11,19 +11,19 @@ class TeamItem(scrapy.Item):
     college_id = scrapy.Field()
     name = scrapy.Field()
     division = scrapy.Field()
-    gender = srcapy.Field()
+    gender = scrapy.Field()
 
 class AthleteItem(scrapy.Item):
     athlete_id = scrapy.Field()
     name = scrapy.Field()
-    college_id = srapy.Field()
+    college_id = scrapy.Field()
 
 
 
-class PerfomanceItem(scrapy.Item):
-    athlete_id = srapy.Field()
-    event_name = srapy.Field()
-    mark = srapy.Field()
-    date = srapy.Field()
-    venue = srapy.Field()
-    season = srapy.Field()
+class PerformanceItem(scrapy.Item):
+    athlete_id = scrapy.Field()
+    event_name = scrapy.Field()
+    mark = scrapy.Field()
+    date = scrapy.Field()
+    venue = scrapy.Field()
+    season = scrapy.Field()
