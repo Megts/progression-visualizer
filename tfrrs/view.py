@@ -5,6 +5,10 @@ import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
+from ncaa_db_queries import DB
+
+
+db = DB()
 
 class StartWindow(object):
     def setupStartWindow(self, MainWindow):
@@ -14,6 +18,7 @@ class StartWindow(object):
         MainWindow.setWindowTitle("TFRRS Visualizer")
         MainWindow.setStyleSheet("background-color: gray;")
         self.centralwidget = QWidget(MainWindow)
+
 
     #Text description
         #self.descriptionLabel= QLabel(MainWindow)
@@ -72,11 +77,17 @@ class CollegeSelection(object):
     #College Selector
         self.college= QComboBox(self.centralwidget)
         self.college.setGeometry(350,250, 150, 50)
-        self.college.addItem('Augsburg')
-        self.college.addItem('Loras')
-        self.college.addItem('Wartburg')
-        self.college.addItem('Central')
+            
+        #gender = self.gender.currentindex()
+        #if gender == 0:
+            #gender = 'm'
+        #else:
+            #gender = 'f'
+        #div = self.division.currentindex() + 1
+        self.college.addItems(db.get_div_teams(2,'m' ))
+
         self.college.setStyleSheet("background-color: orange;")
+       
 
         self.collegeLabel= QLabel(self.centralwidget)
         self.collegeLabel.setText('College')
@@ -206,7 +217,7 @@ class MainWindow(QMainWindow):
 
     def startGraphViewer(self):
         self.graphViewer.setupGraphViewer(self)
-        #self.show()
+        self.show()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
