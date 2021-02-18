@@ -9,13 +9,13 @@ class TFRRSspider(scrapy.Spider):
 
     allowed_domains = ['tfrrs.org']
 
-    start_urls = ['https://tfrss.org/leagues/49.html',
-                  'https://tfrrs.org/leagues/50.html',
-                  'https://tfrrs.org/leagues/51.html',]
+    start_urls = ['https://tfrrs.org/leagues/49.html',]
+                  #'https://tfrrs.org/leagues/50.html',
+                  #'https://tfrrs.org/leagues/51.html',]
 
     def start_requests(self):
         for u in self.start_urls:
-            yield scrapy.Request(u, callback=self.parse_div_teams)
+            yield scrapy.Request(u, callback=self.parse_team_athletes)
 
     def parse_div_teams(self, response):
         league = response.url.split("/")[-1]
@@ -27,37 +27,41 @@ class TFRRSspider(scrapy.Spider):
             division = 'DIII'
         teamName = response.xpath('//div[@class="col-lg-4"]/table/tbody/tr/td/a/text()').getall()
         teamLink = response.xpath('//div[@class="col-lg-4"]/table/tbody/tr/td/a/@href').getall()
-        team = TeamItem()
         for i in range(len(teamLink)):
+            team = TeamItem()
             name = teamName[i]
             try:
-                team_id = '_'.join(teamLink[i].split('/')[-1].split('.')[0].split('_')[3:])
+                team_id = teamLink[i].split('/')[-1].replace('.html', '')
                 gender = teamLink[i].split('/')[-1].split('_')[2]
-            except e:
-            team['college_id'] = team_id + gender
-            team['name'] = name
-            team['division'] = division
-            team['gender'] = gender
+                team['college_id'] = team_id
+                team['name'] = name
+                team['division'] = division
+                team['gender'] = gender
 
-            yield team
-
-        for link in teamLink:
-            yield response.follow(link, callback=self.parse_team_athletes)
+                yield team
+                yield response.follow(teamLink[i], callback=self.parse_team_athletes)
+            except IndexError:
+                print(name, "does not follow the normal url schema and was not added")
 
 
     def parse_team_athletes(self, response):
-        athName = response.xpath('//div[@class="col-lg-4"]/table/tbody/tr/td/a/text()').getall()
-        athLink = response.xpath('//div[@class="col-lg-4"]/table/tbody/tr/td/a/@href').getall()
-        athlete = AthleteItem()
-        for i in ragnge(len(athLink)):
+        print('parsing team')
+        athName = response.xpath('//div[@class="col-lg-4 "]/table//a/text()').getall()
+        athLink = response.xpath('//div[@class="col-lg-4 "]/table//a/@href').getall()
+        team_id = response.url.split('/')[-1].replace('.html', '')
+        print('entering loop')
+        print(len(athLink))
+        for i in range(len(athLink)):
+            athlete = AthleteItem()
             name = athName[i]
             splitLink = athLink[i].split('/')
             athID = splitLink[-3]
-            teamID = splitLink[-2]
 
             athlete['athlete_id'] = athID
             athlete['name'] = name
-            athlete['college_id'] = teamID
+            athlete['college_id'] = team_id
+            print(athlete)
+            yield athlete
 
 
     def parse_athlete_events(self, response):
@@ -73,17 +77,21 @@ class TFRRSspider(scrapy.Spider):
                 season = season.strip('()')
             else:
                 mark, venue, date = line
+                day, month, year = date_to_tup(date)
                 perf['ahtlete_id'] = athlete_id
                 perf['event_name'] = event_name
                 perf['mark'] = mark
-                perf['date'] = date
+                perf['day'] = day
+                per['month'] = month
+                perf['year'] = year
                 perf['venue'] = venue
                 perf['season'] = season
 
                 yield perf
 
+
     def cleanTable(table):
-        newTable = []
+        newTable =[]
         for line in table:
             line = line.replace('\n', '').replace(' ', '')
             if line != '':
@@ -93,3 +101,13 @@ class TFRRSspider(scrapy.Spider):
                     else:
                         newTable.append([line])
         return newTable
+
+    def date_to_tup(date):
+        months = {'jan':0, 'feb':1, 'mar':2, 'apr':3, 'may':4,
+                    'jun':5, 'jul':6, 'aug':7, 'sep':8, 'oct':9,
+                    'nov':10, 'dec':11}
+        month_day, year = date.split(',')
+        month_day = month_day.split('-')
+        month, day = month_day[0].split[' ']
+        month = months[month.lower()]
+        return int(day), int(month), int(year)
