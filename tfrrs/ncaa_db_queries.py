@@ -13,7 +13,11 @@ class DB:
             self.conn = sqlite3.connect(self.name)
             self.curr = self.conn.cursor()
         except:
+<<<<<<< HEAD:ncaa_db_queries.py
             print('did not connect')
+=======
+            print("did not connect")
+>>>>>>> 1faefc5458e1c6f9133c2d610372f413c4b7c678:tfrrs/ncaa_db_queries.py
 
     def _close_connection(self):
         self.conn.close()
@@ -23,6 +27,7 @@ class DB:
             input: integer value of 1,2, or 3
             output: list of strings
         """
+        print('starting connection')
         self._start_connection()
         teams = self.curr.execute("""SELECT name
                                     FROM Colleges
@@ -30,6 +35,7 @@ class DB:
                                     (division, gender))
         teams = teams.fetchall()
         self._close_connection()
+        print('returning list')
         return self._tuplist_to_list(teams)
 
     def get_team_id(self, teamName, gender):
@@ -59,9 +65,14 @@ class DB:
     def get_athlete_seasons(self, athlete_id):
         pass
 
+<<<<<<< HEAD:ncaa_db_queries.py
     def get_athlete_season_events(self, athlete_id, season)
         self._start_connection()
         events = self.curr.execute("""SELECT )
+=======
+    def get_athlete_season_events(self, athlete_id):
+        pass
+>>>>>>> 1faefc5458e1c6f9133c2d610372f413c4b7c678:tfrrs/ncaa_db_queries.py
 
     def _tuplist_to_list(self, tuplist):
         return [item for tup in tuplist for item in tup]
