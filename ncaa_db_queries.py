@@ -9,8 +9,11 @@ class DB:
         self.name = name
 
     def _start_connection(self):
-        self.conn = sqlite3.connect(self.name)
-        self.curr = self.conn.cursor()
+        try:
+            self.conn = sqlite3.connect(self.name)
+            self.curr = self.conn.cursor()
+        except:
+            print('did not connect')
 
     def _close_connection(self):
         self.conn.close()
@@ -21,7 +24,7 @@ class DB:
             output: list of strings
         """
         self._start_connection()
-        teams = self.curr.execute("""SELECTname
+        teams = self.curr.execute("""SELECT name
                                     FROM Colleges
                                     WHERE division = ? AND gender = ?""",
                                     (division, gender))
@@ -53,11 +56,12 @@ class DB:
         self._close_connection()
         return roster
 
-    def get_athlete_easons(self, athlete_id):
+    def get_athlete_seasons(self, athlete_id):
         pass
 
-    def get_athlete_season_events(self, athlete_id)
-        pass
+    def get_athlete_season_events(self, athlete_id, season)
+        self._start_connection()
+        events = self.curr.execute("""SELECT )
 
     def _tuplist_to_list(self, tuplist):
         return [item for tup in tuplist for item in tup]
