@@ -21,11 +21,8 @@ class TfrrsPipeline:
         self.create_performance_table()
 
     def create_connnection(self):
-        try:
-            self.conn = sqlite3.connect("ncaa.db")
-            self.curr = self.conn.cursor()
-        except Sqlite3.Error() as e:
-            print("something went wrong", e)
+        self.conn = sqlite3.connect("ncaa.db")
+        self.curr = self.conn.cursor()
 
     def close_spider(self,spider):
         self.close_connection()
@@ -63,7 +60,6 @@ class TfrrsPipeline:
                             day INTEGER,
                             month INTEGER,
                             year INTEGER,
-                            venue TEXT,
                             season TEXT,
                             UNIQUE(athlete_id,event_name,day,month,year,mark)
                             )""")
@@ -87,9 +83,8 @@ class TfrrsPipeline:
                                 item['gender']
                             ))
             self.conn.commit()
-            print('succesfully saved:', item['college_id'],item['name'], item['division'],item['gender'])
         except sqlite3.Error() as e:
-            print(e)
+            self.log_error(e)
 
 
     def store_athlete(self, item):
@@ -100,22 +95,27 @@ class TfrrsPipeline:
                                 item['college_id']
                             ))
             self.conn.commit()
-            print('succesfully saved:', item)
         except sqlite3.Error() as e:
-            print(e)
+            self.log_error(e)
 
     def store_performance(self, item):
-        self.curr.execute("""INSERT INTO Performances VALUES(?,?,?,?,?,?,?,?)""", (
-                            item['athlete_id'],
-                            item['event_name'],
-                            item['mark'],
-                            item['day'],
-                            item['month'],
-                            item['year'],
-                            item['venue'],
-                            item['season']
-                        ))
-        self.conn.commit()
+        try:
+            self.curr.execute("""INSERT INTO Performances VALUES(?,?,?,?,?,?,?,?)""", (
+                                item['athlete_id'],
+                                item['event_name'],
+                                item['mark'],
+                                item['day'],
+                                item['month'],
+                                item['year'],
+                                item['season']
+                            ))
+            self.conn.commit()
+        except sqlite3.Error() as e:
+            self.log_error(e)
+
+    def log_error(self, error):
+        with open("sql_error_log.txt", 'a') as f:
+            f.write(error)
 
     def close_connection(self):
         self.conn.close()
