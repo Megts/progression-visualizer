@@ -27,5 +27,4 @@ class PerformanceItem(scrapy.Item):
     day = scrapy.Field()
     month = scrapy.Field()
     year = scrapy.Field()
-    venue = scrapy.Field()
     season = scrapy.Field()
