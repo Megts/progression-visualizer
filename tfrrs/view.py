@@ -84,7 +84,9 @@ class CollegeSelection(object):
         #else:
             #gender = 'f'
         #div = self.division.currentindex() + 1
-        self.college.addItems(db.get_div_teams(3, 'm' ))
+        name_id = db.get_div_teams(3, 'm' )
+        team_names = [name for name, id in name_id]
+        self.college.addItems(team_names)
 
         self.college.setStyleSheet("background-color: orange;")
 

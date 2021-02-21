@@ -35,7 +35,7 @@ class DB:
 
     def get_team_roster(self, team_id):
         self._start_connection()
-        roster = curr.execute("""SELECT name, id
+        roster = self.curr.execute("""SELECT name, id
                                 FROM Athletes
                                 WHERE college_id = ?""",
                                  (team_id,))
