@@ -84,7 +84,7 @@ class CollegeSelection(object):
         #else:
             #gender = 'f'
         #div = self.division.currentindex() + 1
-        self.college.addItems(db.get_div_teams(2,'m' ))
+        self.college.addItems(db.get_div_teams(3, 'm' ))
 
         self.college.setStyleSheet("background-color: orange;")
        
@@ -116,7 +116,7 @@ class AthleteSelection(object):
         self.athlete=QListWidget(self.centralwidget)
         self.athlete.setGeometry(275,100,200,50)
         self.athlete.setAlternatingRowColors(True)
-        self.athlete.addItem("Nick")
+        #self.athlete.addItems(db.get_team_roster(')
         self.athlete.addItem("Matt")
         self.athlete.addItem("John")
         self.athlete.addItem("Brock")
@@ -223,3 +223,4 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     w = MainWindow()
     sys.exit(app.exec_())
+
