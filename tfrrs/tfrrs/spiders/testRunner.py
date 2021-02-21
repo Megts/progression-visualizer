@@ -13,18 +13,20 @@ class TFRRSspider(scrapy.Spider):
                   'https://tfrrs.org/leagues/50.html',
                   'https://tfrrs.org/leagues/51.html',]
 
+
     def start_requests(self):
         for u in self.start_urls:
             yield scrapy.Request(u, callback=self.parse_div_teams)
 
+
     def parse_div_teams(self, response):
         league = response.url.split("/")[-1]
         if league == '49.html':
-            division = 'DI'
+            division = 1
         if league == '50.html':
-            division = 'DII'
+            division = 2
         if league == '51.html':
-            division = 'DIII'
+            division = 3
         rows = response.xpath('//div[@class="col-lg-4"]/table/tbody/tr')
         for row in rows:
             male_team = TeamItem()
@@ -46,7 +48,7 @@ class TFRRSspider(scrapy.Spider):
             if f_col_link is not None:
                 team_id = f_col_link.split('/')[-1].replace('.html', '')
                 female_team['college_id'] = team_id
-                female_team['name'] = m_col_name
+                female_team['name'] = f_col_name
                 female_team['division'] = division
                 female_team['gender'] = 'f'
 
@@ -59,7 +61,10 @@ class TFRRSspider(scrapy.Spider):
         athLink = response.xpath('//div[@class="col-lg-4 "]/table//a/@href').getall()
         team_id = response.url.split('/')[-1].replace('.html', '')
         if len(athLink) == 0:
-            self.log_error(team_id + " has no roster, or the \"col-lg-4 \" may not hav a space at end")
+            athName = response.xpath('//div[@class="col-lg-4"]/table//a/text()').getall()
+            athLink = response.xpath('//div[@class="col-lg-4"]/table//a/@href').getall()
+            if len(athLink) == 0:
+                self.log_error(team_id + " has no roster, or the the class is really messed up\n")
         for i in range(len(athLink)):
             athlete = AthleteItem()
             name = athName[i]
@@ -67,10 +72,11 @@ class TFRRSspider(scrapy.Spider):
             last_name = last_name.strip()
             first_name = first_name.strip()
             splitLink = athLink[i].split('/')
-            athID = splitLink[-3]
+            athID = int(splitLink[-3])
 
             athlete['athlete_id'] = athID
-            athlete['name'] = name
+            athlete['first_name'] = first_name
+            athlete['last_name'] = last_name
             athlete['college_id'] = team_id
             yield athlete
             yield response.follow(athLink[i], callback=self.parse_athlete_events)
@@ -97,16 +103,22 @@ class TFRRSspider(scrapy.Spider):
                 mark = line[0]
                 date = line[-1]
                 day, month, year = self.date_to_tup(date)
+                min, sec_or_meters, time_or_dist, wind_legal2, wind_legal4 = self.parse_mark(mark)
 
                 perf['athlete_id'] = athlete_id
                 perf['event_name'] = event_name
-                perf['mark'] = mark
+                perf['min'] = min
+                perf['sec_or_meters'] = sec_or_meters
+                perf['time_or_dist'] = time_or_dist
+                perf['wind_legal2'] = wind_legal2
+                perf['wind_legal4'] = wind_legal4
                 perf['day'] = day
                 perf['month'] = month
                 perf['year'] = year
                 perf['season'] = season
 
                 yield perf
+
 
     def date_to_tup(self, date):
         months = {'jan':0, 'feb':1, 'mar':2, 'apr':3, 'may':4,
@@ -117,3 +129,33 @@ class TFRRSspider(scrapy.Spider):
         month, day = month_day[0].strip().replace('  ', ' ').split(' ')
         month = months[month.lower()]
         return int(day), int(month), int(year)
+
+
+    def parse_mark(self, mark):
+        min = None
+        time_or_dist = 'time'
+        wind_legal2 = 1
+        wind_legal4 = 1
+        if ':' in mark:
+            min, sec_or_meters = mark.split(':')
+            min = int(min)
+        else:
+            sec_or_meters = mark
+        if mark in ['ND', 'NH', 'DNF', 'FOUL', 'DNS', 'DQ']:
+            return [None for i in range(5)]
+        if 'm' in sec_or_meters:
+            time_or_dist = 'dist'
+            sec_or_meters = sec_or_meters.replace('m', '')
+        if 'W' in sec_or_meters:
+            sec_or_meters = sec_or_meters.replace('W','')
+            wind_legal2 = 0
+            wind_legal4 = 0
+        elif 'w' in sec_or_meters:
+            sec_or_meters = sec_or_meters.replace('w', '')
+            wind_legal2 = 0
+        return min, float(sec_or_meters), time_or_dist, wind_legal2, wind_legal4
+
+
+    def log_error(self, error):
+        with open('runner_log.txt', 'a') as f:
+            f.write(error)
