@@ -9,105 +9,153 @@ class TFRRSspider(scrapy.Spider):
 
     allowed_domains = ['tfrrs.org']
 
-    start_urls = ['https://tfrrs.org/leagues/49.html',]
-                  #'https://tfrrs.org/leagues/50.html',
-                  #'https://tfrrs.org/leagues/51.html',]
+    start_urls = ['https://tfrrs.org/leagues/49.html',
+                  'https://tfrrs.org/leagues/50.html',
+                  'https://tfrrs.org/leagues/51.html',]
+
 
     def start_requests(self):
         for u in self.start_urls:
-            yield scrapy.Request(u, callback=self.parse_team_athletes)
+            yield scrapy.Request(u, callback=self.parse_div_teams)
+
 
     def parse_div_teams(self, response):
         league = response.url.split("/")[-1]
         if league == '49.html':
-            division = 'DI'
+            division = 1
         if league == '50.html':
-            division = 'DII'
+            division = 2
         if league == '51.html':
-            division = 'DIII'
-        teamName = response.xpath('//div[@class="col-lg-4"]/table/tbody/tr/td/a/text()').getall()
-        teamLink = response.xpath('//div[@class="col-lg-4"]/table/tbody/tr/td/a/@href').getall()
-        for i in range(len(teamLink)):
-            team = TeamItem()
-            name = teamName[i]
-            try:
-                team_id = teamLink[i].split('/')[-1].replace('.html', '')
-                gender = teamLink[i].split('/')[-1].split('_')[2]
-                team['college_id'] = team_id
-                team['name'] = name
-                team['division'] = division
-                team['gender'] = gender
+            division = 3
+        rows = response.xpath('//div[@class="col-lg-4"]/table/tbody/tr')
+        for row in rows:
+            male_team = TeamItem()
+            female_team = TeamItem()
+            m_col, f_col = row.xpath('.//td')
+            m_col_link = m_col.xpath('./a/@href').get()
+            m_col_name = m_col.xpath('./a/text()').get()
+            if m_col_link is not None:
+                team_id = m_col_link.split('/')[-1].replace('.html', '')
+                male_team['college_id'] = team_id
+                male_team['name'] = m_col_name
+                male_team['division'] = division
+                male_team['gender'] = 'm'
 
-                yield team
-                yield response.follow(teamLink[i], callback=self.parse_team_athletes)
-            except IndexError:
-                print(name, "does not follow the normal url schema and was not added")
+                yield male_team
+                yield response.follow(m_col_link, callback=self.parse_team_athletes)
+            f_col_link = f_col.xpath('./a/@href').get()
+            f_col_name = f_col.xpath('./a/text()').get()
+            if f_col_link is not None:
+                team_id = f_col_link.split('/')[-1].replace('.html', '')
+                female_team['college_id'] = team_id
+                female_team['name'] = f_col_name
+                female_team['division'] = division
+                female_team['gender'] = 'f'
+
+                yield female_team
+                yield response.follow(f_col_link, callback=self.parse_team_athletes)
 
 
     def parse_team_athletes(self, response):
-        print('parsing team')
         athName = response.xpath('//div[@class="col-lg-4 "]/table//a/text()').getall()
         athLink = response.xpath('//div[@class="col-lg-4 "]/table//a/@href').getall()
         team_id = response.url.split('/')[-1].replace('.html', '')
-        print('entering loop')
-        print(len(athLink))
+        if len(athLink) == 0:
+            athName = response.xpath('//div[@class="col-lg-4"]/table//a/text()').getall()
+            athLink = response.xpath('//div[@class="col-lg-4"]/table//a/@href').getall()
+            if len(athLink) == 0:
+                self.log_error(team_id + " has no roster, or the the class is really messed up\n")
         for i in range(len(athLink)):
             athlete = AthleteItem()
             name = athName[i]
+            last_name, first_name = name.split(',')
+            last_name = last_name.strip()
+            first_name = first_name.strip()
             splitLink = athLink[i].split('/')
-            athID = splitLink[-3]
+            athID = int(splitLink[-3])
 
             athlete['athlete_id'] = athID
-            athlete['name'] = name
+            athlete['first_name'] = first_name
+            athlete['last_name'] = last_name
             athlete['college_id'] = team_id
-            print(athlete)
             yield athlete
+            yield response.follow(athLink[i], callback=self.parse_athlete_events)
 
 
     def parse_athlete_events(self, response):
-        athlete_id = response.url.split()[-3]
-        eventTables = response.xpath('//div[@id="event-history"]/table//text()').getall()
-        eventTables = cleanTable(eventTables)
-        currentEvent = None
+        athlete_id = response.url.split('/')[-3]
+        eventTables = response.xpath('//div[@id="event-history"]/table//tr')
         perf = PerformanceItem()
         for line in eventTables:
-            if '\t' in line:
-                event = line.replace('\t\t', ',')
-                event_name, season = event.split(",")
-                season = season.strip('()')
+            line = line.xpath('.//text()').getall()
+            line = [td.replace('\n', '').replace('\t\t', ',') for td in line]
+            i = 0
+            while i < len(line):
+                if '' == line[i].strip():
+                    line.pop(i)
+                else:
+                    i += 1
+            if len(line) ==2:
+                event_name, season = line[0].split(", ")
+                event_name = event_name.strip()
+                season = season.strip(' ()')
             else:
-                mark, venue, date = line
-                day, month, year = date_to_tup(date)
-                perf['ahtlete_id'] = athlete_id
+                mark = line[0]
+                date = line[-1]
+                day, month, year = self.date_to_tup(date)
+                min, sec_or_meters, time_or_dist, wind_legal2, wind_legal4 = self.parse_mark(mark)
+
+                perf['athlete_id'] = athlete_id
                 perf['event_name'] = event_name
-                perf['mark'] = mark
+                perf['min'] = min
+                perf['sec_or_meters'] = sec_or_meters
+                perf['time_or_dist'] = time_or_dist
+                perf['wind_legal2'] = wind_legal2
+                perf['wind_legal4'] = wind_legal4
                 perf['day'] = day
-                per['month'] = month
+                perf['month'] = month
                 perf['year'] = year
-                perf['venue'] = venue
                 perf['season'] = season
 
                 yield perf
 
 
-    def cleanTable(table):
-        newTable =[]
-        for line in table:
-            line = line.replace('\n', '').replace(' ', '')
-            if line != '':
-                if line[:3] != 'Top':
-                    if len(newTable[-1]) < 3:
-                        newTable[-1].append(line)
-                    else:
-                        newTable.append([line])
-        return newTable
-
-    def date_to_tup(date):
+    def date_to_tup(self, date):
         months = {'jan':0, 'feb':1, 'mar':2, 'apr':3, 'may':4,
                     'jun':5, 'jul':6, 'aug':7, 'sep':8, 'oct':9,
                     'nov':10, 'dec':11}
         month_day, year = date.split(',')
         month_day = month_day.split('-')
-        month, day = month_day[0].split[' ']
+        month, day = month_day[0].strip().replace('  ', ' ').split(' ')
         month = months[month.lower()]
         return int(day), int(month), int(year)
+
+
+    def parse_mark(self, mark):
+        min = None
+        time_or_dist = 'time'
+        wind_legal2 = 1
+        wind_legal4 = 1
+        if ':' in mark:
+            min, sec_or_meters = mark.split(':')
+            min = int(min)
+        else:
+            sec_or_meters = mark
+        if mark in ['ND', 'NH', 'DNF', 'FOUL', 'DNS', 'DQ']:
+            return [None for i in range(5)]
+        if 'm' in sec_or_meters:
+            time_or_dist = 'dist'
+            sec_or_meters = sec_or_meters.replace('m', '')
+        if 'W' in sec_or_meters:
+            sec_or_meters = sec_or_meters.replace('W','')
+            wind_legal2 = 0
+            wind_legal4 = 0
+        elif 'w' in sec_or_meters:
+            sec_or_meters = sec_or_meters.replace('w', '')
+            wind_legal2 = 0
+        return min, float(sec_or_meters), time_or_dist, wind_legal2, wind_legal4
+
+
+    def log_error(self, error):
+        with open('runner_log.txt', 'a') as f:
+            f.write(error)
