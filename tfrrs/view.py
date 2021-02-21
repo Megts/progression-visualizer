@@ -58,7 +58,7 @@ class CollegeSelection(object):
         self.divisionLabel.setGeometry(200,50,150,50)
         self.divisionLabel.setAlignment(Qt.AlignCenter)
         self.divisionLabel.setStyleSheet('QLabel {color: Orange}')
-        self.divisionLabel.setFont(QFont('Arial', 15))    
+        self.divisionLabel.setFont(QFont('Arial', 15))
 
     #Gender Selector
         self.gender= QComboBox(self.centralwidget)
@@ -77,17 +77,17 @@ class CollegeSelection(object):
     #College Selector
         self.college= QComboBox(self.centralwidget)
         self.college.setGeometry(350,250, 150, 50)
-            
+
         #gender = self.gender.currentindex()
         #if gender == 0:
             #gender = 'm'
         #else:
             #gender = 'f'
         #div = self.division.currentindex() + 1
-        self.college.addItems(db.get_div_teams(2,'m' ))
+        self.college.addItems(db.get_div_teams(3, 'm' ))
 
         self.college.setStyleSheet("background-color: orange;")
-       
+
 
         self.collegeLabel= QLabel(self.centralwidget)
         self.collegeLabel.setText('College')
@@ -116,12 +116,12 @@ class AthleteSelection(object):
         self.athlete=QListWidget(self.centralwidget)
         self.athlete.setGeometry(275,100,200,50)
         self.athlete.setAlternatingRowColors(True)
-        self.athlete.addItem("Nick")
-        self.athlete.addItem("Matt")
-        self.athlete.addItem("John")
-        self.athlete.addItem("Brock")
-        self.athlete.addItem("Levi")
-        self.athlete.addItem("Chris")
+        self.athlete.addItems(db.get_team_roster('1'))
+        #self.athlete.addItem("Matt")
+        #self.athlete.addItem("John")
+        #self.athlete.addItem("Brock")
+        #self.athlete.addItem("Levi")
+        #self.athlete.addItem("Chris")
         self.athlete.setStyleSheet("background-color: orange;")
         #self.athlete.itemClicked(item) Need to be able to select the athletes.
         self.athleteLabel= QLabel(self.centralwidget)
@@ -205,7 +205,7 @@ class MainWindow(QMainWindow):
 
     def startCollegeSelection(self):
         self.collegeSelection.setupCollegeSelection(self)
-        self.collegeSelection.nextButton.clicked.connect(self.startAthleteSelection) 
+        self.collegeSelection.nextButton.clicked.connect(self.startAthleteSelection)
         self.show()
 
 

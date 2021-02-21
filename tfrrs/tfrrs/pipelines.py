@@ -57,11 +57,11 @@ class TfrrsPipeline:
         self.curr.execute("""CREATE TABLE Performances(
                             athlete_id INTEGER,
                             event_name TEXT,
-                            min INTEGER,
+                            minutes INTEGER,
                             sec_or_meters REAL,
                             time_or_dist TEXT,
                             wind_legal2 INTEGER,
-                            wind_legal4 InTEGER,
+                            wind_legal4 INTEGER,
                             day INTEGER,
                             month INTEGER,
                             year INTEGER,

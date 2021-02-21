@@ -7,6 +7,8 @@ class DB:
 
     def __init__(self, name = "mockNCAA.db"):
         self.name = name
+        self.sprints = ['55 Meters','60 Meters','100 Meters','200 Meters','300 Hurdles'
+                        '400 Meters','55 Hurdles', '110 Hurdles', ]
 
     def _start_connection(self):
         try:
@@ -20,32 +22,16 @@ class DB:
 
     def get_div_teams(self, division, gender):
         """ returns a list of teams in a particular division and gender
-            input: integer value of 1,2, or 3
+            input:  division: integer value of 1,2, or 3, gender string of m or f
             output: list of strings
         """
         self._start_connection()
-        teams = self.curr.execute("""SELECT name
+        teams = self.curr.execute("""SELECT name, college_id
                                     FROM Colleges
                                     WHERE division = ? AND gender = ?""",
                                     (division, gender))
         teams = teams.fetchall()
-        self._close_connection()
-        print('returning list')
-        return self._tuplist_to_list(teams)
-
-    def get_team_id(self, teamName, gender):
-        """ Method for getting a team id
-            input: teamName(string) gender(string)
-            output: team_id(int)
-        """
-        self._start_connection()
-        team_id = self.curr.execute("""SELECT college_id
-                                        FROM Colleges
-                                        WHERE name = ? AND gender = ?""",
-                                        (teamName, gender))
-        id = team_id.fetchall()[0][0]
-        self._close_connection()
-        return id
+        return teams
 
     def get_team_roster(self, team_id):
         self._start_connection()
@@ -58,11 +44,34 @@ class DB:
         return roster
 
     def get_athlete_seasons(self, athlete_id):
-        pass
+        self._start_connection()
+        events = self.curr.execute("""SELECT DISTINCT season
+                                        FROM Performances
+                                        WHERE athlete_id = ?""",
+                                        (athlete_id,)
+                                )
+        seasons = seasons.fetchall()
+        self._close_connection()
+        return self._tuplist_to_list(seasons)
 
     def get_athlete_season_events(self, athlete_id, season):
         self._start_connection()
-        events = self.curr.execute("""SELECT""" )
+        events = self.curr.execute("""SELECT event_name
+                                    FROM Performances
+                                    WHERE athlete_id = ? AND season = ?""", (
+                                    athlete_id, season
+                                    ) )
+        events = events.fetchall()
+        self._close_connection()
+        return self._tuplist_to_list(events)
 
     def _tuplist_to_list(self, tuplist):
         return [item for tup in tuplist for item in tup]
+
+    def to_seconds(self,min,seconds):
+        if min is not None:
+            return min*60 + seconds
+        return seconds
+
+    def to_minutes(self,min,seconds):
+        return min + seconds/60
