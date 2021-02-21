@@ -8,7 +8,7 @@ from PyQt5.QtCore import *
 from ncaa_db_queries import DB
 
 
-db = DB()
+db = DB('ncaa.db')
 
 class StartWindow(object):
     def setupStartWindow(self, MainWindow):
@@ -78,13 +78,13 @@ class CollegeSelection(object):
         self.college= QComboBox(self.centralwidget)
         self.college.setGeometry(350,250, 150, 50)
 
-        #gender = self.gender.currentindex()
-        #if gender == 0:
-            #gender = 'm'
-        #else:
-            #gender = 'f'
-        #div = self.division.currentindex() + 1
-        name_id = db.get_div_teams(3, 'm' )
+        gender = self.gender.currentIndex()
+        if gender == 0:
+            gender = 'm'
+        else:
+            gender = 'f'
+        div = self.division.currentIndex() + 1
+        name_id = db.get_div_teams(div, gender )
         team_names = [name for name, id in name_id]
         self.college.addItems(team_names)
 
@@ -118,7 +118,7 @@ class AthleteSelection(object):
         self.athlete=QListWidget(self.centralwidget)
         self.athlete.setGeometry(275,100,200,50)
         self.athlete.setAlternatingRowColors(True)
-        self.athlete.addItems(db.get_team_roster('1'))
+        #self.athlete.addItems(db.get_team_roster('ND_college_m_Minot_State'))
         #self.athlete.addItem("Matt")
         #self.athlete.addItem("John")
         #self.athlete.addItem("Brock")
@@ -188,7 +188,7 @@ class GraphViewer(object):
         MainWindow.setStyleSheet("background-color: gray;")
         self.centralwidget = QWidget(MainWindow)
 
-
+        MainWindow.setCentralWidget(self.centralwidget)
 class MainWindow(QMainWindow):
 
     def __init__(self, parent = None):
