@@ -78,13 +78,13 @@ class CollegeSelection(object):
         self.college= QComboBox(self.centralwidget)
         self.college.setGeometry(350,250, 150, 50)
 
-        #gender = self.gender.currentindex()
-        #if gender == 0:
-            #gender = 'm'
-        #else:
-            #gender = 'f'
-        #div = self.division.currentindex() + 1
-        name_id = db.get_div_teams(3, 'm' )
+        gender = self.gender.currentIndex()
+        if gender == 0:
+            gender = 'm'
+        else:
+            gender = 'f'
+        div = self.division.currentIndex() + 1
+        name_id = db.get_div_teams(div, gender)
         team_names = [name for name, id in name_id]
         self.college.addItems(team_names)
 

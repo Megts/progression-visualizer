@@ -4,6 +4,10 @@
 
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
+from view import *
+
+def main():
+    while true:
 
 def initial_scrape():
     process = CrawlerProcess(get_project_settings())
@@ -11,4 +15,4 @@ def initial_scrape():
     process.start() # the script will block here until the crawling is finished
 
 if __name__ == '__main__':
-    initial_scrape()
+    main()

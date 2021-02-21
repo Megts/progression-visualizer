@@ -5,7 +5,7 @@ import sqlite3
 
 class DB:
 
-    def __init__(self, name = "mockNCAA.db"):
+    def __init__(self, name = "ncaa.db"):
         self.name = name
         self.sprints = ['55 Meters','60 Meters','100 Meters','200 Meters','300 Hurdles'
                         '400 Meters','55 Hurdles', '110 Hurdles', ]
@@ -35,7 +35,7 @@ class DB:
 
     def get_team_roster(self, team_id):
         self._start_connection()
-        roster = self.curr.execute("""SELECT name, id
+        roster = self.curr.execute("""SELECT (first_name || ' ' || last_name) as name, athlete_id
                                 FROM Athletes
                                 WHERE college_id = ?""",
                                  (team_id,))
