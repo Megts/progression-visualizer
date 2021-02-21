@@ -44,7 +44,8 @@ class TfrrsPipeline:
         self.curr.execute("""DROP TABLE IF EXISTS Athletes""")
         self.curr.execute("""CREATE TABLE Athletes(
                             athlete_id INTEGER,
-                            name TEXT,
+                            first_name TEXT,
+                            last_name TEXT,
                             college_id TEXT,
                             PRIMARY KEY (athlete_id),
                             FOREIGN KEY (college_id)
@@ -56,12 +57,16 @@ class TfrrsPipeline:
         self.curr.execute("""CREATE TABLE Performances(
                             athlete_id INTEGER,
                             event_name TEXT,
-                            mark TEXT,
+                            min INTEGER,
+                            sec_or_meters REAL,
+                            time_or_dist TEXT,
+                            wind_legal2 INTEGER,
+                            wind_legal4 InTEGER,
                             day INTEGER,
                             month INTEGER,
                             year INTEGER,
                             season TEXT,
-                            UNIQUE(athlete_id,event_name,day,month,year,mark)
+                            UNIQUE(athlete_id,event_name,day,month,year,sec_or_meters)
                             )""")
         self.conn.commit()
 
@@ -76,7 +81,7 @@ class TfrrsPipeline:
 
     def store_college(self, item):
         try:
-            self.curr.execute("""INSERT INTO Colleges(college_id,name,division,gender) VALUES(?,?,?,?)""",(
+            self.curr.execute("""INSERT INTO Colleges VALUES(?,?,?,?)""",(
                                 item['college_id'],
                                 item['name'],
                                 item['division'],
@@ -85,25 +90,34 @@ class TfrrsPipeline:
             self.conn.commit()
         except sqlite3.Error() as e:
             self.log_error(e)
+        except sqlite3.IntegrityError() as e:
+            self.log_error(e)
 
 
     def store_athlete(self, item):
         try:
-            self.curr.execute("""INSERT INTO Athletes(athlete_id,name,college_id) VALUES(?,?,?)""", (
+            self.curr.execute("""INSERT INTO Athletes VALUES(?,?,?,?)""", (
                                 item['athlete_id'],
-                                item['name'],
+                                item['first_name'],
+                                item['last_name'],
                                 item['college_id']
                             ))
             self.conn.commit()
         except sqlite3.Error() as e:
             self.log_error(e)
+        except sqlite3.IntegrityError() as e:
+            self.log_error(e)
 
     def store_performance(self, item):
         try:
-            self.curr.execute("""INSERT INTO Performances VALUES(?,?,?,?,?,?,?,?)""", (
+            self.curr.execute("""INSERT INTO Performances VALUES(?,?,?,?,?,?,?,?,?,?,?)""", (
                                 item['athlete_id'],
                                 item['event_name'],
-                                item['mark'],
+                                item['min'],
+                                item['sec_or_meters'],
+                                item['time_or_dist'],
+                                item['wind_legal2'],
+                                item['wind_legal4'],
                                 item['day'],
                                 item['month'],
                                 item['year'],
@@ -111,6 +125,8 @@ class TfrrsPipeline:
                             ))
             self.conn.commit()
         except sqlite3.Error() as e:
+            self.log_error(e)
+        except sqlite3.IntegrityError() as e:
             self.log_error(e)
 
     def log_error(self, error):
