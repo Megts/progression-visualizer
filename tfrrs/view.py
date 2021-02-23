@@ -60,6 +60,7 @@ class CollegeSelection(object):
         self.divisionLabel.setStyleSheet('QLabel {color: Orange}')
         self.divisionLabel.setFont(QFont('Arial', 15))
 
+
     #Gender Selector
         self.gender= QComboBox(self.centralwidget)
         self.gender.setGeometry(350,150, 150, 50)
@@ -77,6 +78,7 @@ class CollegeSelection(object):
     #College Selector
         self.college= QComboBox(self.centralwidget)
         self.college.setGeometry(350,250, 150, 50)
+
 
         gender = self.gender.currentIndex()
         if gender == 0:
@@ -118,14 +120,16 @@ class AthleteSelection(object):
         self.athlete=QListWidget(self.centralwidget)
         self.athlete.setGeometry(275,100,200,50)
         self.athlete.setAlternatingRowColors(True)
-        #self.athlete.addItems(db.get_team_roster('ND_college_m_Minot_State'))
-        #self.athlete.addItem("Matt")
-        #self.athlete.addItem("John")
-        #self.athlete.addItem("Brock")
-        #self.athlete.addItem("Levi")
-        #self.athlete.addItem("Chris")
+
+#Needs finished (team_id, is not defined)
+        team_id = ?
+        athlete_id= db.get_team_roster(team_id,)
+        athlete_names= [name for name, id in athlete_id]
+        self.college.addItems(athlete_names)
+
+
+        
         self.athlete.setStyleSheet("background-color: orange;")
-        #self.athlete.itemClicked(item) Need to be able to select the athletes.
         self.athleteLabel= QLabel(self.centralwidget)
         self.athleteLabel.setText("Athlete(s)")
         self.athleteLabel.setAlignment(Qt.AlignCenter)
@@ -137,9 +141,7 @@ class AthleteSelection(object):
     #Season Selector
         self.season= QComboBox(self.centralwidget)
         self.season.setGeometry(100,250,200,50)
-        self.season.addItem('Cross Country')
-        self.season.addItem('Indoor Track and Field')
-        self.season.addItem('Outdoor Track and Field')
+        self.season.addItems(db.get_athlete_seasons(athlete_id))
         self.season.setStyleSheet("background-color: orange;")
 
         self.seasonLabel= QLabel(self.centralwidget)
