@@ -103,8 +103,8 @@ class CollegeSelection(object):
         print(i)
         self.college.clear()
         self.div = i + 1
-        name_id = db.get_div_teams(self.div, self.gen)
-        team_names = [name for name, id in name_id]
+        self.name_id = db.get_div_teams(self.div, self.gen)
+        team_names = [name for name, id in self.name_id]
         self.college.addItems(team_names)
         self.division.setCurrentIndex(i)
 
@@ -115,13 +115,16 @@ class CollegeSelection(object):
             self.gen = 'm'
         else:
             self.gen = 'f'
-        name_id = db.get_div_teams(self.div, self.gen)
-        team_names = [name for name, id in name_id]
+        self.name_id = db.get_div_teams(self.div, self.gen)
+        team_names = [name for name, id in self.name_id]
         self.college.addItems(team_names)
         self.gender.setCurrentIndex(i)
 
+    def collegechange(self,i):
+        self.college_id = self.name_id[i][1]
+
 class AthleteSelection(object):
-    def setupAthleteSelection(self, MainWindow):
+    def setupAthleteSelection(self, MainWindow, college_id):
         MainWindow.setGeometry(400,150,700,500)
         MainWindow.setWindowTitle("TFRRS Visualizer")
         MainWindow.setStyleSheet("background-color: gray;")
@@ -131,7 +134,9 @@ class AthleteSelection(object):
         self.athlete=QListWidget(self.centralwidget)
         self.athlete.setGeometry(275,100,200,50)
         self.athlete.setAlternatingRowColors(True)
-        #self.athlete.addItems(db.get_team_roster('team_id'))
+        athletes = db.get_team_roster(college_id)
+        athlete_names = [name for name, id in athletes]
+        self.athlete.addItems(athlete_names)
         self.athlete.setStyleSheet("background-color: orange;")
         #self.athlete.itemClicked(item) Need to be able to select the athletes.
         self.athleteLabel= QLabel(self.centralwidget)
@@ -220,11 +225,13 @@ class MainWindow(QMainWindow):
         self.show()
         self.collegeSelection.gender.activated.connect(self.collegeSelection.genderchange)
         self.collegeSelection.division.activated.connect(self.collegeSelection.divisionchange)
+        self.collegeSelection.college.activated.connect(self.collegeSelection.collegechange)
 
 
 
     def startAthleteSelection(self):
-        self.athleteSelection.setupAthleteSelection(self)
+        print(self.collegeSelection.college_id)
+        self.athleteSelection.setupAthleteSelection(self,self.collegeSelection.college_id)
         self.athleteSelection.backButton.clicked.connect(self.startCollegeSelection)
         self.athleteSelection.updateButton.clicked.connect(self.startGraphViewer)
         self.show()
