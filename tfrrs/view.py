@@ -131,12 +131,7 @@ class AthleteSelection(object):
         self.athlete=QListWidget(self.centralwidget)
         self.athlete.setGeometry(275,100,200,50)
         self.athlete.setAlternatingRowColors(True)
-        #self.athlete.addItems(db.get_team_roster('ND_college_m_Minot_State'))
-        #self.athlete.addItem("Matt")
-        #self.athlete.addItem("John")
-        #self.athlete.addItem("Brock")
-        #self.athlete.addItem("Levi")
-        #self.athlete.addItem("Chris")
+        #self.athlete.addItems(db.get_team_roster('team_id'))
         self.athlete.setStyleSheet("background-color: orange;")
         #self.athlete.itemClicked(item) Need to be able to select the athletes.
         self.athleteLabel= QLabel(self.centralwidget)
