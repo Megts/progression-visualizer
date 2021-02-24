@@ -52,6 +52,7 @@ class CollegeSelection(object):
         self.division.addItem('Divison 2')
         self.division.addItem('Division 3')
         self.division.setStyleSheet("background-color: orange;")
+        self.div = 1
 
         self.divisionLabel= QLabel(self.centralwidget)
         self.divisionLabel.setText('Division')
@@ -66,6 +67,7 @@ class CollegeSelection(object):
         self.gender.addItem('Male')
         self.gender.addItem('Female')
         self.gender.setStyleSheet("background-color: orange;")
+        self.gen = 'm'
 
         self.genderLabel= QLabel(self.centralwidget)
         self.genderLabel.setText('Gender')
@@ -77,16 +79,6 @@ class CollegeSelection(object):
     #College Selector
         self.college= QComboBox(self.centralwidget)
         self.college.setGeometry(350,250, 150, 50)
-
-        gender = self.gender.currentIndex()
-        if gender == 0:
-            self.gen = 'm'
-        else:
-            self.gen = 'f'
-        self.div = self.division.currentIndex() + 1
-        name_id = db.get_div_teams(self.div, self.gen)
-        team_names = [name for name, id in name_id]
-        self.college.addItems(team_names)
 
         self.college.setStyleSheet("background-color: orange;")
 
@@ -108,21 +100,25 @@ class CollegeSelection(object):
         MainWindow.setCentralWidget(self.centralwidget)
 
     def divisionchange(self,i):
+        print(i)
         self.college.clear()
         self.div = i + 1
         name_id = db.get_div_teams(self.div, self.gen)
         team_names = [name for name, id in name_id]
         self.college.addItems(team_names)
+        self.division.setCurrentIndex(i)
 
     def genderchange(self, i):
+        print(i)
+        self.college.clear()
         if i == 0:
             self.gen = 'm'
         else:
             self.gen = 'f'
         name_id = db.get_div_teams(self.div, self.gen)
         team_names = [name for name, id in name_id]
-        self.college.clear()
         self.college.addItems(team_names)
+        self.gender.setCurrentIndex(i)
 
 class AthleteSelection(object):
     def setupAthleteSelection(self, MainWindow):
@@ -226,9 +222,10 @@ class MainWindow(QMainWindow):
     def startCollegeSelection(self):
         self.collegeSelection.setupCollegeSelection(self)
         self.collegeSelection.nextButton.clicked.connect(self.startAthleteSelection)
-        self.collegeSelection.college.currentIndexChanged.connect(self.collegeSelection.divisionchange)
-        self.collegeSelection.gender.currentIndexChanged.connect(self.collegeSelection.genderchange)
         self.show()
+        self.collegeSelection.gender.activated.connect(self.collegeSelection.genderchange)
+        self.collegeSelection.division.activated.connect(self.collegeSelection.divisionchange)
+
 
 
     def startAthleteSelection(self):
