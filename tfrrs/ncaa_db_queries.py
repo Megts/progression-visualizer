@@ -21,9 +21,9 @@ class DB:
         self.conn.close()
 
     def get_div_teams(self, division, gender):
-        """ returns a list of teams in a particular division and gender
+        """ returns a list of team name and id tuples in a particular division and gender
             input:  division: integer value of 1,2, or 3, gender string of m or f
-            output: list of strings
+            output: list of tuples (name, id)
         """
         self._start_connection()
         teams = self.curr.execute("""SELECT name, college_id
@@ -64,6 +64,10 @@ class DB:
         events = events.fetchall()
         self._close_connection()
         return self._tuplist_to_list(events)
+
+    def get_athlete_results(self,athlete_id,event_name,season):
+        self._start_connection()
+        return marks,dates,units,wind2,wind4
 
     def _tuplist_to_list(self, tuplist):
         return [item for tup in tuplist for item in tup]
