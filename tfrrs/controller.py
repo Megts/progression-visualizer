@@ -7,7 +7,7 @@ from scrapy.utils.project import get_project_settings
 from view import *
 
 def main():
-    while true:
+    pass
 
 def initial_scrape():
     process = CrawlerProcess(get_project_settings())

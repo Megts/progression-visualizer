@@ -141,7 +141,7 @@ class TFRRSspider(scrapy.Spider):
             min = int(min)
         else:
             sec_or_meters = mark
-        if mark in ['ND', 'NH', 'DNF', 'FOUL', 'DNS', 'DQ']:
+        if mark in ['ND', 'NT', 'NH', 'DNF', 'FOUL', 'DNS', 'DQ']:
             return [None for i in range(5)]
         if 'm' in sec_or_meters:
             time_or_dist = 'dist'
