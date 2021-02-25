@@ -10,7 +10,7 @@ class Window(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("Matplotlib Embeding In PyQt5")
+        self.setWindowTitle("Selected Athlete(s) Results")
         self.setGeometry(400,400,900,500)
 
         self.MyUI()
@@ -20,11 +20,6 @@ class Window(QMainWindow):
         canvas= Canvas(self,width=8, height=4)
         canvas.move(0,0)
         
-        button = QPushButton("Click Me", self)
-        button.move(100,450)
-
-        button2 = QPushButton("Click Me Two", self)
-        button2.move(250,450)
 
 class Canvas(FigureCanvas):
     def __init__(self, parent= None, width = 5, height = 5, dpi = 100):

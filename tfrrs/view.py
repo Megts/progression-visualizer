@@ -6,6 +6,9 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from ncaa_db_queries import DB
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 
 
 db = DB('ncaa.db')
@@ -197,10 +200,18 @@ class AthleteSelection(object):
 
 class GraphViewer(object):
     def setupGraphViewer(self, MainWindow):
-        MainWindow.setGeometry(400,150,700,500)
-        MainWindow.setWindowTitle("TFRRS Visualizer")
-        MainWindow.setStyleSheet("background-color: gray;")
-        self.centralwidget = QWidget(MainWindow)
+        self.plt.style.use
+        date_x = [1,2,3]
+        A1performance = [6.89, 6.70, 6.43]
+    
+        self.plt.plot(date_x, A1performance, color='k', linestyle='--', marker= 'o', label='Athlete1')
+        self.plt.title("Athlete Performances")
+        self.plt.xlabel("Date")
+        self.plt.ylabel("Performance Time/Distance")
+
+        self.plt.legend()
+        self.plt.grid(True)
+        self.plt.show()
 
         MainWindow.setCentralWidget(self.centralwidget)
 class MainWindow(QMainWindow):
