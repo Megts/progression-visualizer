@@ -9,6 +9,7 @@ from ncaa_db_queries import DB
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
 
 
 db = DB('ncaa.db')
@@ -200,20 +201,44 @@ class AthleteSelection(object):
 
 class GraphViewer(object):
     def setupGraphViewer(self, MainWindow):
-        self.plt.style.use
-        date_x = [1,2,3]
-        A1performance = [6.89, 6.70, 6.43]
-    
-        self.plt.plot(date_x, A1performance, color='k', linestyle='--', marker= 'o', label='Athlete1')
-        self.plt.title("Athlete Performances")
-        self.plt.xlabel("Date")
-        self.plt.ylabel("Performance Time/Distance")
-
-        self.plt.legend()
-        self.plt.grid(True)
-        self.plt.show()
+        MainWindow.setGeometry(400,150,700,500)
+        MainWindow.setWindowTitle("TFRRS Visualizer")
+        MainWindow.setStyleSheet("background-color: gray;")
+        self.centralwidget = QWidget(MainWindow)
 
         MainWindow.setCentralWidget(self.centralwidget)
+
+    def MyUI(self):
+
+        canvas = Canvas(self,width=8,height=4)
+        canvas.move(0,0)
+        
+        self.button = QPushButton(self.centralwidget)
+        self.button.setText("Click Me",self)
+        self.button.setGeometry(100,300,150,50)
+
+        self.button2=QPushButton(self.centralwidget)
+        self.button2.setText("Click Me Two",self)
+        self.button2.setGeometry(300,300,150,50)
+        
+class Canvas(FigureCanvas):
+    def __init__(self,parent=None, width = 5, height= 5, dpi=100):
+        fig=Figure(figsize=(width,height),dpi=dpi)
+        self.axes= fig.add_subplot(111)
+
+        FigureCanvas.__init__(self, fig)
+        self.setParent(parent)
+
+        self.plot()
+
+    def plot (self):
+        x=np.array([50,30,40])
+        labels = ['apples','bananas', 'melons']
+        ax=self.figure.add_subplot(111)
+        ax.pie(x,labels=labels)
+
+
+    
 class MainWindow(QMainWindow):
 
     def __init__(self, parent = None):
