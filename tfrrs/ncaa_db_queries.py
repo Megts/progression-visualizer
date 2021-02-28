@@ -44,7 +44,7 @@ class DB:
 
     def get_athlete_seasons(self, athlete_id):
         self._start_connection()
-        events = self.curr.execute("""SELECT DISTINCT season
+        seasons = self.curr.execute("""SELECT DISTINCT season
                                         FROM Performances
                                         WHERE athlete_id = ?""",
                                         (athlete_id,)
@@ -55,7 +55,7 @@ class DB:
 
     def get_athlete_season_events(self, athlete_id, season):
         self._start_connection()
-        events = self.curr.execute("""SELECT event_name
+        events = self.curr.execute("""SELECT DISTINCT event_name
                                       FROM Performances
                                       WHERE athlete_id = ? AND season = ?""", (
                                       athlete_id, season
@@ -66,7 +66,7 @@ class DB:
 
     def get_athlete_results(self,athlete_id,event_name,season):
         self._start_connection()
-        perfomances = self.curr.execute("""SELECT min,sec_or_meters,wind_legal2,wind_legal4,day,month,year
+        performances = self.curr.execute("""SELECT min,sec_or_meters,wind_legal2,wind_legal4,day,month,year
                                           FROM Performances
                                           WHERE athlete_id = ? AND event_name = ? AND season = ?""", (
                                                 athlete_id,
@@ -90,21 +90,21 @@ class DB:
                 marks.append(meters)
                 wind2.append(windL2)
                 wind4.append(windL4)
-                dates.append(self._date_to_to_dayssince2000(day,month,year))
+                dates.append(self._date_to_to_days_since2000(day,month,year))
         elif int(event_name.split(' ')[0]) in sprints:
             units = 'seconds'
             for min, seconds, windL2, windL4, day, month, year in performances:
                 marks.append(self.to_seconds(min,seconds))
                 wind2.append(windL2)
                 wind4.append(windL4)
-                dates.append(self._date_to_to_dayssince2000(day,month,year))
+                dates.append(self._date_to_to_days_since2000(day,month,year))
         else:
             units = 'minutes'
             for min, seconds, windL2, windL4, day, month, year in performances:
                 marks.append(self.to_minutes(min,seconds))
                 wind2.append(windL2)
                 wind4.append(windL4)
-                dates.append(self._date_to_to_dayssince2000(day,month,year))
+                dates.append(self._date_to_to_days_since2000(day,month,year))
 
         return marks,dates,units,wind2,wind4
 

@@ -83,7 +83,10 @@ class CollegeSelection(object):
     #College Selector
         self.college= QComboBox(self.centralwidget)
         self.college.setGeometry(350,250, 150, 50)
-
+        self.name_id = db.get_div_teams(self.div, self.gen)
+        team_names = [name for name, id in self.name_id]
+        self.college.addItems(team_names)
+        self.college_id = self.name_id[0][1]
         self.college.setStyleSheet("background-color: orange;")
 
 
@@ -109,6 +112,7 @@ class CollegeSelection(object):
         self.div = i + 1
         self.name_id = db.get_div_teams(self.div, self.gen)
         team_names = [name for name, id in self.name_id]
+        self.college.clear()
         self.college.addItems(team_names)
         self.division.setCurrentIndex(i)
 
@@ -121,6 +125,7 @@ class CollegeSelection(object):
             self.gen = 'f'
         self.name_id = db.get_div_teams(self.div, self.gen)
         team_names = [name for name, id in self.name_id]
+        self.college.clear()
         self.college.addItems(team_names)
         self.gender.setCurrentIndex(i)
 
@@ -135,11 +140,11 @@ class AthleteSelection(object):
         self.centralwidget = QWidget(MainWindow)
 
     #Athlete Selector
-        self.athlete=QListWidget(self.centralwidget)
+        self.athlete=QComboBox(self.centralwidget)
         self.athlete.setGeometry(275,100,200,50)
-        self.athlete.setAlternatingRowColors(True)
-        athletes = db.get_team_roster(college_id)
-        athlete_names = [name for name, id in athletes]
+        self.athletes = db.get_team_roster(college_id)
+        athlete_names = [name for name, id in self.athletes]
+        self.ath_id = self.athletes[0][1]
         self.athlete.addItems(athlete_names)
         self.athlete.setStyleSheet("background-color: orange;")
         #self.athlete.itemClicked(item) Need to be able to select the athletes.
@@ -154,10 +159,10 @@ class AthleteSelection(object):
     #Season Selector
         self.season= QComboBox(self.centralwidget)
         self.season.setGeometry(100,250,200,50)
-        self.season.addItem('Cross Country')
-        self.season.addItem('Indoor Track and Field')
-        self.season.addItem('Outdoor Track and Field')
+        seasons = db.get_athlete_seasons(self.ath_id)
+        self.season.addItems(seasons)
         self.season.setStyleSheet("background-color: orange;")
+        self.season_picked = self.season.currentText()
 
         self.seasonLabel= QLabel(self.centralwidget)
         self.seasonLabel.setText('Season')
@@ -169,10 +174,9 @@ class AthleteSelection(object):
     #Event Selector
         self.event= QComboBox(self.centralwidget)
         self.event.setGeometry(475,250,200,50)
-        self.event.addItem('100 m')
-        self.event.addItem('200 m')
-        self.event.addItem('400 m')
-        self.event.addItem('800m')
+        events = db.get_athlete_season_events(self.ath_id, self.season_picked)
+        self.event.addItems(events)
+        self.event_picked = self.event.currentText()
         self.event.setStyleSheet("background-color: orange;")
 
         self.eventLabel = QLabel(self.centralwidget)
@@ -198,29 +202,39 @@ class AthleteSelection(object):
 
         MainWindow.setCentralWidget(self.centralwidget)
 
+    def seasonChange(self,i):
+        self.season_picked = self.season.itemText(i)
+        events = db.get_athlete_season_events(self.ath_id, self.season_picked)
+        self.event.clear()
+        self.event.addItems(events)
+
+    def eventChange(self, i):
+        self.event_picked = self.event.itemText(i)
+
+    def athleteChange(self,i):
+        self.ath_id = self.athletes[i][1]
+        seasons = db.get_athlete_seasons(self.ath_id)
+        self.season.clear()
+        self.season.addItems(seasons)
+        self.season_picked = self.season.currentText()
+        events = db.get_athlete_season_events(self.ath_id, self.season_picked)
+        self.event.clear()
+        self.event.addItems(events)
 
 class GraphViewer(object):
-    def setupGraphViewer(self, MainWindow):
+    def setupGraphViewer(self, MainWindow, athlete_id, event_name, season):
         MainWindow.setGeometry(400,150,700,500)
         MainWindow.setWindowTitle("TFRRS Visualizer")
         MainWindow.setStyleSheet("background-color: gray;")
         self.centralwidget = QWidget(MainWindow)
 
+        sp = Canvas()
+        marks, dates, units, wind2, wind4 = db.get_athlete_results(athlete_id, event_name, season)
+        sp.axes.plot(marks, dates)
+
         MainWindow.setCentralWidget(self.centralwidget)
 
-    def MyUI(self):
 
-        canvas = Canvas(self,width=8,height=4)
-        canvas.move(0,0)
-        
-        self.button = QPushButton(self.centralwidget)
-        self.button.setText("Click Me",self)
-        self.button.setGeometry(100,300,150,50)
-
-        self.button2=QPushButton(self.centralwidget)
-        self.button2.setText("Click Me Two",self)
-        self.button2.setGeometry(300,300,150,50)
-        
 class Canvas(FigureCanvas):
     def __init__(self,parent=None, width = 5, height= 5, dpi=100):
         fig=Figure(figsize=(width,height),dpi=dpi)
@@ -238,7 +252,7 @@ class Canvas(FigureCanvas):
         ax.pie(x,labels=labels)
 
 
-    
+
 class MainWindow(QMainWindow):
 
     def __init__(self, parent = None):
@@ -258,10 +272,10 @@ class MainWindow(QMainWindow):
     def startCollegeSelection(self):
         self.collegeSelection.setupCollegeSelection(self)
         self.collegeSelection.nextButton.clicked.connect(self.startAthleteSelection)
-        self.show()
         self.collegeSelection.gender.activated.connect(self.collegeSelection.genderchange)
         self.collegeSelection.division.activated.connect(self.collegeSelection.divisionchange)
         self.collegeSelection.college.activated.connect(self.collegeSelection.collegechange)
+        self.show()
 
 
 
@@ -270,10 +284,13 @@ class MainWindow(QMainWindow):
         self.athleteSelection.setupAthleteSelection(self,self.collegeSelection.college_id)
         self.athleteSelection.backButton.clicked.connect(self.startCollegeSelection)
         self.athleteSelection.updateButton.clicked.connect(self.startGraphViewer)
+        self.athleteSelection.season.activated.connect(self.athleteSelection.seasonChange)
+        self.athleteSelection.event.activated.connect(self.athleteSelection.eventChange)
+        self.athleteSelection.athlete.activated.connect(self.athleteSelection.athleteChange)
         self.show()
 
     def startGraphViewer(self):
-        self.graphViewer.setupGraphViewer(self)
+        self.graphViewer.setupGraphViewer(self, self.athleteSelection.ath_id, self.athleteSelection.event_picked, self.athleteSelection.season_picked)
         self.show()
 
 if __name__ == '__main__':
