@@ -42,6 +42,14 @@ class DB:
         self._close_connection()
         return roster
 
+    def get_ahtlete_name(self, athlete_id):
+        self._start_connection()
+        name = self.curr.execute("""SELECT first_name, last_name
+                                    FROM Athletes WHERE athlete_id = ?""",
+                                    (athlete_id,)).fetchall()
+        self._close_connection()
+        return name[0][0] + ' ' + name[0][1]
+
     def get_athlete_seasons(self, athlete_id):
         self._start_connection()
         seasons = self.curr.execute("""SELECT DISTINCT season
@@ -91,7 +99,7 @@ class DB:
                 wind2.append(windL2)
                 wind4.append(windL4)
                 dates.append(self._date_to_to_days_since2000(day,month,year))
-        elif int(event_name.split(' ')[0]) in sprints:
+        elif int(event_name.split(' ')[0].split(',')[0]) in self.sprints:
             units = 'seconds'
             for min, seconds, windL2, windL4, day, month, year in performances:
                 marks.append(self.to_seconds(min,seconds))
@@ -123,9 +131,12 @@ class DB:
 
 
     def to_seconds(self,min,seconds):
-        if min is not None:
-            return min*60 + seconds
-        return seconds
+        if seconds is not None:
+            if min is not None:
+                    return min*60 + seconds
+        return None
 
     def to_minutes(self,min,seconds):
-        return min + seconds/60
+        if min is not None:
+            return min + seconds/60
+        return None

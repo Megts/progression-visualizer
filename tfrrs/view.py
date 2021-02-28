@@ -31,7 +31,7 @@ class StartWindow(object):
         self.descriptionLabel.setWordWrap(True)
         self.descriptionLabel.setFont(QFont("Arial", 15))
         self.descriptionLabel.setAlignment(Qt.AlignCenter)
-        self.descriptionLabel.setGeometry(175,200,350,100)
+        self.descriptionLabel.setGeometry(175,100,350,150)
         self.descriptionLabel.setStyleSheet('QLabel {color: Orange}')
 
     #Button to continue to next window
@@ -225,31 +225,26 @@ class GraphViewer(object):
     def setupGraphViewer(self, MainWindow, athlete_id, event_name, season):
         MainWindow.setGeometry(400,150,700,500)
         MainWindow.setWindowTitle("TFRRS Visualizer")
-        MainWindow.setStyleSheet("background-color: gray;")
+#        MainWindow.setStyleSheet("background-color: gray;")
         self.centralwidget = QWidget(MainWindow)
 
-        sp = Canvas()
+        sc = Canvas()
         marks, dates, units, wind2, wind4 = db.get_athlete_results(athlete_id, event_name, season)
-        sp.axes.plot(marks, dates)
+        dates = [date - min(dates) for date in dates]
+        sc.axes.plot(dates, marks, color = 'orange', marker = '.', linestyle = 'None')
+        ath_name = db.get_ahtlete_name(athlete_id)
+        sc.axes.set(xlabel = "Days since first performance", ylabel = units, title = ath_name)
+        sc.axes.grid()
 
-        MainWindow.setCentralWidget(self.centralwidget)
+
+        MainWindow.setCentralWidget(sc)
 
 
 class Canvas(FigureCanvas):
     def __init__(self,parent=None, width = 5, height= 5, dpi=100):
         fig=Figure(figsize=(width,height),dpi=dpi)
         self.axes= fig.add_subplot(111)
-
-        FigureCanvas.__init__(self, fig)
-        self.setParent(parent)
-
-        self.plot()
-
-    def plot (self):
-        x=np.array([50,30,40])
-        labels = ['apples','bananas', 'melons']
-        ax=self.figure.add_subplot(111)
-        ax.pie(x,labels=labels)
+        super(Canvas, self).__init__(fig)
 
 
 

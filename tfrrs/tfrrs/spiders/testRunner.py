@@ -104,20 +104,20 @@ class TFRRSspider(scrapy.Spider):
                 date = line[-1]
                 day, month, year = self.date_to_tup(date)
                 min, sec_or_meters, time_or_dist, wind_legal2, wind_legal4 = self.parse_mark(mark)
+                if sec_or_meters is not None:
+                    perf['athlete_id'] = athlete_id
+                    perf['event_name'] = event_name
+                    perf['min'] = min
+                    perf['sec_or_meters'] = sec_or_meters
+                    perf['time_or_dist'] = time_or_dist
+                    perf['wind_legal2'] = wind_legal2
+                    perf['wind_legal4'] = wind_legal4
+                    perf['day'] = day
+                    perf['month'] = month
+                    perf['year'] = year
+                    perf['season'] = season
 
-                perf['athlete_id'] = athlete_id
-                perf['event_name'] = event_name
-                perf['min'] = min
-                perf['sec_or_meters'] = sec_or_meters
-                perf['time_or_dist'] = time_or_dist
-                perf['wind_legal2'] = wind_legal2
-                perf['wind_legal4'] = wind_legal4
-                perf['day'] = day
-                perf['month'] = month
-                perf['year'] = year
-                perf['season'] = season
-
-                yield perf
+                    yield perf
 
 
     def date_to_tup(self, date):
