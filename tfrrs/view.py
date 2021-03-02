@@ -31,7 +31,7 @@ class StartWindow(object):
         self.descriptionLabel = QLabel("This program will allow you to visualize athlete statistics in Cross Country or Track and Field. You will be prompted to select NCAA Division, Gender, College, Sport, and Event.",
                                         self.centralwidget)
         self.descriptionLabel.setWordWrap(True)
-        self.descriptionLabel.setFont(QFont("Arial", 15))
+        self.descriptionLabel.setFont(QFont("Arial", 20))
         self.descriptionLabel.setAlignment(Qt.AlignCenter)
         self.descriptionLabel.setGeometry(175,100,350,150)
         self.descriptionLabel.setStyleSheet('QLabel {color: Orange}')
@@ -188,7 +188,7 @@ class AthleteSelection(object):
 
     #Update Button
         self.updateButton= QPushButton(self.centralwidget)
-        self.updateButton.setText("Update Selection")
+        self.updateButton.setText("Plot Selected Event")
         self.updateButton.setGeometry(375,400,150, 50)
         self.updateButton.setStyleSheet("background-color: orange;")
 
@@ -226,7 +226,7 @@ class GraphViewer(object):
     def setupGraphViewer(self, MainWindow, athlete_id, event_name, season):
         MainWindow.setGeometry(400,150,700,500)
         MainWindow.setWindowTitle("TFRRS Visualizer")
-#        MainWindow.setStyleSheet("background-color: gray;")
+        MainWindow.setStyleSheet("background-color: gray;")
         self.centralwidget = QWidget(MainWindow)
 
         sc = Canvas()
