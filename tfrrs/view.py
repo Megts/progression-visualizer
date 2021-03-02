@@ -20,7 +20,7 @@ class StartWindow(object):
     def setupStartWindow(self, MainWindow):
     #Window set up
         MainWindow.setGeometry(400,150,700,500)
-        MainWindow.setFixedSize(700,500)
+        #MainWindow.setFixedSize(700,500)
         MainWindow.setWindowTitle("TFRRS Visualizer")
         MainWindow.setStyleSheet("background-color: gray;")
         self.centralwidget = QWidget(MainWindow)
@@ -33,7 +33,7 @@ class StartWindow(object):
         self.descriptionLabel.setWordWrap(True)
         self.descriptionLabel.setFont(QFont("Arial", 20))
         self.descriptionLabel.setAlignment(Qt.AlignCenter)
-        self.descriptionLabel.setGeometry(175,100,350,150)
+        self.descriptionLabel.setGeometry(175,0,350,325)
         self.descriptionLabel.setStyleSheet('QLabel {color: Orange}')
 
     #Button to continue to next window
@@ -229,7 +229,17 @@ class GraphViewer(object):
         MainWindow.setStyleSheet("background-color: gray;")
         self.centralwidget = QWidget(MainWindow)
 
-        sc = Canvas()
+#Back Button on Graph
+        self.BackButton=QPushButton(self.centralwidget)
+        self.BackButton.setText("Back")
+        self.BackButton.setGeometry (275,450, 150, 50)
+        self.BackButton.setStyleSheet("background-color: orange;")
+
+        MainWindow.setCentralWidget(self.centralwidget)
+
+#Graph Formatting and Inputs
+        sc = Canvas(width= 8, height= 4)
+        sc.move(0,0)
         marks, dates, units, wind2, wind4 = db.get_athlete_results(athlete_id, event_name, season)
         sc.axes.plot(dates, marks, color = 'orange', marker = 'o', linestyle = 'None')
         ath_name = db.get_ahtlete_name(athlete_id)
@@ -242,6 +252,7 @@ class GraphViewer(object):
             print('formatting y axis')
             sc.axes.fmt_ydata = mdates.DateFormatter('%M:%s')
         sc.axes.grid()
+        
 
 
         MainWindow.setCentralWidget(sc)
@@ -292,6 +303,7 @@ class MainWindow(QMainWindow):
 
     def startGraphViewer(self):
         self.graphViewer.setupGraphViewer(self, self.athleteSelection.ath_id, self.athleteSelection.event_picked, self.athleteSelection.season_picked)
+        self.graphViewer.BackButton.clicked.connect(self.startAthleteSelection)
         self.show()
 
 if __name__ == '__main__':

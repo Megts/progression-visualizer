@@ -17,7 +17,7 @@ class Window(QMainWindow):
 
     def MyUI(self):
 
-        canvas= Canvas(self,width=8, height=4)
+        canvas= Canvas(self,width=5, height=5)
         canvas.move(0,0)
         
 
