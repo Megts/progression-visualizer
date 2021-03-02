@@ -2,12 +2,19 @@
 # queries for getting information from the database
 
 import sqlite3
+from datetime import date, time
 
 class DB:
 
     def __init__(self, name = "ncaa.db"):
         self.name = name
-        self.sprints = [55,60,100,110,200,300,400]
+        sprints = [55,60,100,110,200,300,400]
+        self.sprints = []
+        for sprint in sprints:
+            self.sprints.append(str(sprint) + ' Meters')
+            self.sprints.append(str(sprint) + ' Hurdles')
+
+
 
     def _start_connection(self):
         try:
@@ -73,10 +80,12 @@ class DB:
         return self._tuplist_to_list(events)
 
     def get_athlete_results(self,athlete_id,event_name,season):
+        print(athlete_id,event_name,season)
         self._start_connection()
         performances = self.curr.execute("""SELECT min,sec_or_meters,wind_legal2,wind_legal4,day,month,year
                                           FROM Performances
-                                          WHERE athlete_id = ? AND event_name = ? AND season = ?""", (
+                                          WHERE athlete_id = ? AND event_name = ? AND season = ?
+                                          ORDER BY year, month, day""", (
                                                 athlete_id,
                                                 event_name,
                                                 season
@@ -87,7 +96,9 @@ class DB:
                                            athlete_id,
                                            event_name,
                                            season
-                                  )).fetchall()[0][0]
+                                  ))
+        units = units.fetchall()
+        units = units[0][0]
         marks = []
         dates = []
         wind2 = []
@@ -98,42 +109,25 @@ class DB:
                 marks.append(meters)
                 wind2.append(windL2)
                 wind4.append(windL4)
-                dates.append(self._date_to_to_days_since2000(day,month,year))
-        elif int(event_name.split(' ')[0].split(',')[0]) in self.sprints:
-            units = 'seconds'
+                dates.append(date(year,month+1,day))
+        else:
+            units = 'time'
             for min, seconds, windL2, windL4, day, month, year in performances:
                 marks.append(self.to_seconds(min,seconds))
                 wind2.append(windL2)
                 wind4.append(windL4)
-                dates.append(self._date_to_to_days_since2000(day,month,year))
-        else:
-            units = 'minutes'
-            for min, seconds, windL2, windL4, day, month, year in performances:
-                marks.append(self.to_minutes(min,seconds))
-                wind2.append(windL2)
-                wind4.append(windL4)
-                dates.append(self._date_to_to_days_since2000(day,month,year))
+                dates.append(date(year,month + 1,day))
 
         return marks,dates,units,wind2,wind4
 
     def _tuplist_to_list(self, tuplist):
         return [item for tup in tuplist for item in tup]
 
-    def _date_to_to_days_since2000(self,day,month,year):
-        monthdays = [0,31,59,90,120,151,181,212,243,273,304,334]
-        leap_year = year%4 == 0 and (year%100 != 0 or year%400 == 0)
-        year = year - 2000
-        year_days = year*365 + year//4 - year//100 + year//400 +1
-        days = year_days + monthdays[month] + day
-        if leap_year and month <= 1:
-            days -= 1
-        return days
-
-
     def to_seconds(self,min,seconds):
         if seconds is not None:
             if min is not None:
                     return min*60 + seconds
+            return seconds
         return None
 
     def to_minutes(self,min,seconds):

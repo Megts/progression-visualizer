@@ -10,6 +10,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
+import matplotlib.dates as mdates
+from datetime import datetime
 
 
 db = DB('ncaa.db')
@@ -107,7 +109,6 @@ class CollegeSelection(object):
         MainWindow.setCentralWidget(self.centralwidget)
 
     def divisionchange(self,i):
-        print(i)
         self.college.clear()
         self.div = i + 1
         self.name_id = db.get_div_teams(self.div, self.gen)
@@ -117,7 +118,6 @@ class CollegeSelection(object):
         self.division.setCurrentIndex(i)
 
     def genderchange(self, i):
-        print(i)
         self.college.clear()
         if i == 0:
             self.gen = 'm'
@@ -220,6 +220,7 @@ class AthleteSelection(object):
         events = db.get_athlete_season_events(self.ath_id, self.season_picked)
         self.event.clear()
         self.event.addItems(events)
+        self.event_picked = self.event.currentText()
 
 class GraphViewer(object):
     def setupGraphViewer(self, MainWindow, athlete_id, event_name, season):
@@ -230,10 +231,16 @@ class GraphViewer(object):
 
         sc = Canvas()
         marks, dates, units, wind2, wind4 = db.get_athlete_results(athlete_id, event_name, season)
-        dates = [date - min(dates) for date in dates]
-        sc.axes.plot(dates, marks, color = 'orange', marker = '.', linestyle = 'None')
+        sc.axes.plot(dates, marks, color = 'orange', marker = 'o', linestyle = 'None')
         ath_name = db.get_ahtlete_name(athlete_id)
-        sc.axes.set(xlabel = "Days since first performance", ylabel = units, title = ath_name)
+        sc.axes.set(xlabel = "Years", ylabel = units, title = ath_name)
+        sc.axes.fmt_xdata = mdates.DateFormatter('%Y-%m')
+        datemin = datetime(dates[0].year,1,1)
+        datemax = datetime(dates[-1].year + 1,1,1)
+        sc.axes.set_xlim(datemin,datemax)
+        if units != 'meters':
+            print('formatting y axis')
+            sc.axes.fmt_ydata = mdates.DateFormatter('%M:%s')
         sc.axes.grid()
 
 
@@ -275,7 +282,6 @@ class MainWindow(QMainWindow):
 
 
     def startAthleteSelection(self):
-        print(self.collegeSelection.college_id)
         self.athleteSelection.setupAthleteSelection(self,self.collegeSelection.college_id)
         self.athleteSelection.backButton.clicked.connect(self.startCollegeSelection)
         self.athleteSelection.updateButton.clicked.connect(self.startGraphViewer)
