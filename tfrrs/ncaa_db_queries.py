@@ -2,7 +2,7 @@
 # queries for getting information from the database
 
 import sqlite3
-from datetime import date, time
+from datetime import datetime, MINYEAR
 
 class DB:
 
@@ -113,10 +113,17 @@ class DB:
         else:
             units = 'time'
             for min, seconds, windL2, windL4, day, month, year in performances:
-                marks.append(self.to_seconds(min,seconds))
+                if seconds is not None:
+                    sec = int(seconds)
+                    micro = int((seconds-sec) * 10**6)
+                    if min is None:
+                        min = 0
+                    marks.append(datetime(3,3,15,minute=min,second=sec,microsecond=micro))
+                else:
+                    marks.append(None)
                 wind2.append(windL2)
                 wind4.append(windL4)
-                dates.append(date(year,month + 1,day))
+                dates.append(datetime(year,month + 1,day))
 
         return marks,dates,units,wind2,wind4
 

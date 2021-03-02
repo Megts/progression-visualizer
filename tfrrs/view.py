@@ -233,25 +233,39 @@ class GraphViewer(object):
         marks, dates, units, wind2, wind4 = db.get_athlete_results(athlete_id, event_name, season)
         sc.axes.plot(dates, marks, color = 'orange', marker = 'o', linestyle = 'None')
         ath_name = db.get_ahtlete_name(athlete_id)
-        sc.axes.set(xlabel = "Years", ylabel = units, title = ath_name)
-        sc.axes.fmt_xdata = mdates.DateFormatter('%Y-%m')
+        sc.axes.set(xlabel = "Years", ylabel = units, title = ath_name + ' - ' + event_name)
+
+        years = mdates.YearLocator()
+        months = mdates.MonthLocator()
+        years_fmt = mdates.DateFormatter('%Y')
+        min_fmt = mdates.DateFormatter('%M:%S')
+        auto = mdates.AutoDateLocator()
+
+        sc.axes.xaxis.set_major_locator(years)
+        sc.axes.xaxis.set_major_formatter(years_fmt)
+        sc.axes.xaxis.set_minor_locator(months)
+
+        sc.axes.yaxis.set_major_locator(auto)
+
         datemin = datetime(dates[0].year,1,1)
         datemax = datetime(dates[-1].year + 1,1,1)
         sc.axes.set_xlim(datemin,datemax)
-        if units != 'meters':
+        if units != 'Meters':
             print('formatting y axis')
-            sc.axes.fmt_ydata = mdates.DateFormatter('%M:%s')
-        sc.axes.grid()
+            sc.axes.yaxis.set_major_formatter(min_fmt)
+            sc.axes.format_ydata = mdates.DateFormatter('%M:%S.%f')
 
+        sc.axes.format_xdata = mdates.DateFormatter('%Y-%m-%d')
+        sc.fig.autofmt_xdate()
 
         MainWindow.setCentralWidget(sc)
 
 
 class Canvas(FigureCanvas):
     def __init__(self,parent=None, width = 5, height= 5, dpi=100):
-        fig=Figure(figsize=(width,height),dpi=dpi)
-        self.axes= fig.add_subplot(111)
-        super(Canvas, self).__init__(fig)
+        self.fig=Figure(figsize=(width,height),dpi=dpi)
+        self.axes= self.fig.add_subplot(111)
+        super(Canvas, self).__init__(self.fig)
 
 
 
