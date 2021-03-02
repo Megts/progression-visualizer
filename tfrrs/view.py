@@ -20,7 +20,7 @@ class StartWindow(object):
     def setupStartWindow(self, MainWindow):
     #Window set up
         MainWindow.setGeometry(400,150,700,500)
-        MainWindow.setFixedSize(700,500)
+        #MainWindow.setFixedSize(700,500)
         MainWindow.setWindowTitle("TFRRS Visualizer")
         MainWindow.setStyleSheet("background-color: gray;")
         self.centralwidget = QWidget(MainWindow)
@@ -31,9 +31,9 @@ class StartWindow(object):
         self.descriptionLabel = QLabel("This program will allow you to visualize athlete statistics in Cross Country or Track and Field. You will be prompted to select NCAA Division, Gender, College, Sport, and Event.",
                                         self.centralwidget)
         self.descriptionLabel.setWordWrap(True)
-        self.descriptionLabel.setFont(QFont("Arial", 15))
+        self.descriptionLabel.setFont(QFont("Arial", 20))
         self.descriptionLabel.setAlignment(Qt.AlignCenter)
-        self.descriptionLabel.setGeometry(175,100,350,150)
+        self.descriptionLabel.setGeometry(175,0,350,325)
         self.descriptionLabel.setStyleSheet('QLabel {color: Orange}')
 
     #Button to continue to next window
@@ -188,7 +188,7 @@ class AthleteSelection(object):
 
     #Update Button
         self.updateButton= QPushButton(self.centralwidget)
-        self.updateButton.setText("Update Selection")
+        self.updateButton.setText("Plot Selected Event")
         self.updateButton.setGeometry(375,400,150, 50)
         self.updateButton.setStyleSheet("background-color: orange;")
 
@@ -226,10 +226,20 @@ class GraphViewer(object):
     def setupGraphViewer(self, MainWindow, athlete_id, event_name, season):
         MainWindow.setGeometry(400,150,700,500)
         MainWindow.setWindowTitle("TFRRS Visualizer")
-#        MainWindow.setStyleSheet("background-color: gray;")
+        MainWindow.setStyleSheet("background-color: gray;")
         self.centralwidget = QWidget(MainWindow)
 
-        sc = Canvas()
+#Back Button on Graph
+        self.BackButton=QPushButton(self.centralwidget)
+        self.BackButton.setText("Back")
+        self.BackButton.setGeometry (275,450, 150, 50)
+        self.BackButton.setStyleSheet("background-color: orange;")
+
+        MainWindow.setCentralWidget(self.centralwidget)
+
+#Graph Formatting and Inputs
+        sc = Canvas(width= 8, height= 4)
+        sc.move(0,0)
         marks, dates, units, wind2, wind4 = db.get_athlete_results(athlete_id, event_name, season)
         sc.axes.plot(dates, marks, color = 'orange', marker = 'o', linestyle = 'None')
         ath_name = db.get_ahtlete_name(athlete_id)
@@ -306,6 +316,7 @@ class MainWindow(QMainWindow):
 
     def startGraphViewer(self):
         self.graphViewer.setupGraphViewer(self, self.athleteSelection.ath_id, self.athleteSelection.event_picked, self.athleteSelection.season_picked)
+        self.graphViewer.BackButton.clicked.connect(self.startAthleteSelection)
         self.show()
 
 if __name__ == '__main__':
