@@ -110,8 +110,8 @@ class DB:
                 wind2.append(windL2)
                 wind4.append(windL4)
                 dates.append(date(year,month+1,day))
-        elif event_name in self.sprints:
-            units = 'Seconds'
+        else:
+            units = 'Time'
             for min, seconds, windL2, windL4, day, month, year in performances:
                 if seconds is not None:
                     sec = int(seconds)
@@ -124,7 +124,7 @@ class DB:
                 wind2.append(windL2)
                 wind4.append(windL4)
                 dates.append(datetime(year,month + 1,day))
-
+        print(marks,dates,units,wind2,wind4)
         return marks,dates,units,wind2,wind4
 
     def _tuplist_to_list(self, tuplist):
