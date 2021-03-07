@@ -2,7 +2,7 @@
 # queries for getting information from the database
 
 import sqlite3
-from datetime import datetime, MINYEAR
+from datetime import datetime
 
 class DB:
 
@@ -61,7 +61,8 @@ class DB:
         self._start_connection()
         seasons = self.curr.execute("""SELECT DISTINCT season
                                         FROM Performances
-                                        WHERE athlete_id = ?""",
+                                        WHERE athlete_id = ?
+                                        ORDER BY season""",
                                         (athlete_id,)
                                 )
         seasons = seasons.fetchall()
@@ -72,7 +73,8 @@ class DB:
         self._start_connection()
         events = self.curr.execute("""SELECT DISTINCT event_name
                                       FROM Performances
-                                      WHERE athlete_id = ? AND season = ?""", (
+                                      WHERE athlete_id = ? AND season = ?
+                                      ORDER BY event_name""", (
                                       athlete_id, season
                                    ))
         events = events.fetchall()
@@ -109,7 +111,7 @@ class DB:
                 marks.append(meters)
                 wind2.append(windL2)
                 wind4.append(windL4)
-                dates.append(date(year,month+1,day))
+                dates.append(datetime(year,month+1,day))
         else:
             units = 'Time'
             for min, seconds, windL2, windL4, day, month, year in performances:
@@ -124,7 +126,6 @@ class DB:
                 wind2.append(windL2)
                 wind4.append(windL4)
                 dates.append(datetime(year,month + 1,day))
-        print(marks,dates,units,wind2,wind4)
         return marks,dates,units,wind2,wind4
 
     def _tuplist_to_list(self, tuplist):

@@ -11,15 +11,20 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 import matplotlib.dates as mdates
+from matplotlib.ticker import FuncFormatter
 from datetime import datetime
 
 
 db = DB('ncaa.db')
+TOP = 400
+LEFT = 150
+WIDTH = 700
+HEIGHT = 500
 
 class StartWindow(object):
     def setupStartWindow(self, MainWindow):
     #Window set up
-        MainWindow.setGeometry(400,150,700,500)
+        MainWindow.setGeometry(TOP,LEFT,WIDTH,HEIGHT)
         #MainWindow.setFixedSize(700,500)
         MainWindow.setWindowTitle("TFRRS Visualizer")
         MainWindow.setStyleSheet("background-color: gray;")
@@ -33,7 +38,7 @@ class StartWindow(object):
         self.descriptionLabel.setWordWrap(True)
         self.descriptionLabel.setFont(QFont("Arial", 20))
         self.descriptionLabel.setAlignment(Qt.AlignCenter)
-        self.descriptionLabel.setGeometry(175,0,350,325)
+        self.descriptionLabel.setGeometry((WIDTH-375)//2,10,375,325)
         self.descriptionLabel.setStyleSheet('QLabel {color: Orange}')
 
     #Button to continue to next window
@@ -46,7 +51,7 @@ class StartWindow(object):
 
 class CollegeSelection(object):
     def setupCollegeSelection(self, MainWindow):
-        MainWindow.setGeometry(400,150,700,500)
+        MainWindow.setGeometry(TOP,LEFT,WIDTH,HEIGHT)
         MainWindow.setWindowTitle("TFRRS Visualizer")
         MainWindow.setStyleSheet("background-color: gray;")
         self.centralwidget = QWidget(MainWindow)
@@ -134,7 +139,7 @@ class CollegeSelection(object):
 
 class AthleteSelection(object):
     def setupAthleteSelection(self, MainWindow, college_id):
-        MainWindow.setGeometry(400,150,700,500)
+        MainWindow.setGeometry(TOP,LEFT,WIDTH,HEIGHT)
         MainWindow.setWindowTitle("TFRRS Visualizer")
         MainWindow.setStyleSheet("background-color: gray;")
         self.centralwidget = QWidget(MainWindow)
@@ -224,7 +229,7 @@ class AthleteSelection(object):
 
 class GraphViewer(object):
     def setupGraphViewer(self, MainWindow, athlete_id, event_name, season):
-        MainWindow.setGeometry(400,150,700,500)
+        MainWindow.setGeometry(TOP,LEFT,WIDTH,HEIGHT)
         MainWindow.setWindowTitle("TFRRS Visualizer")
         MainWindow.setStyleSheet("background-color: gray;")
         self.centralwidget = QWidget(MainWindow)
@@ -235,47 +240,46 @@ class GraphViewer(object):
         self.BackButton.setGeometry (275,450, 150, 50)
         self.BackButton.setStyleSheet("background-color: orange;")
 
-        MainWindow.setCentralWidget(self.centralwidget)
-
 #Graph Formatting and Inputs
-        sc = Canvas(width= 8, height= 4)
-        sc.move(0,0)
+        sc = Canvas(self.centralwidget, width = 650, height = 400)
+        sc.move((WIDTH-650)//2,0)
         marks, dates, units, wind2, wind4 = db.get_athlete_results(athlete_id, event_name, season)
         sc.axes.plot(dates, marks, color = 'orange', marker = 'o', linestyle = 'None')
         ath_name = db.get_ahtlete_name(athlete_id)
-        sc.axes.set(xlabel = "Years", ylabel = units, title = ath_name + ' - ' + event_name)
+        sc.axes.set(xlabel = "Years", ylabel = units, title = '{} - {} {}'.format(ath_name,season,event_name))
 
         years = mdates.YearLocator()
         months = mdates.MonthLocator()
         years_fmt = mdates.DateFormatter('%Y')
-        min_fmt = mdates.DateFormatter('%M:%S')
-        auto = mdates.AutoDateLocator()
+        time = mdates.AutoDateLocator()
+        time_fmt = mdates.AutoDateFormatter(time)
 
         sc.axes.xaxis.set_major_locator(years)
         sc.axes.xaxis.set_major_formatter(years_fmt)
         sc.axes.xaxis.set_minor_locator(months)
-
-        sc.axes.yaxis.set_major_locator(auto)
 
         datemin = datetime(dates[0].year,1,1)
         datemax = datetime(dates[-1].year + 1,1,1)
         sc.axes.set_xlim(datemin,datemax)
         if units != 'Meters':
             print('formatting y axis')
-            sc.axes.yaxis.set_major_formatter(min_fmt)
+            sc.axes.yaxis.set_major_locator(time)
+            sc.axes.yaxis.set_major_formatter(time_fmt)
             sc.axes.format_ydata = mdates.DateFormatter('%M:%S.%f')
 
         sc.axes.format_xdata = mdates.DateFormatter('%Y-%m-%d')
         sc.fig.autofmt_xdate()
 
-        MainWindow.setCentralWidget(sc)
+        MainWindow.setCentralWidget(self.centralwidget)
 
 
 class Canvas(FigureCanvas):
-    def __init__(self,parent=None, width = 5, height= 5, dpi=100):
-        self.fig=Figure(figsize=(width,height),dpi=dpi)
+    def __init__(self,parent=None, width = 400, height= 400, dpi=100):
+        px = 1/plt.rcParams['figure.dpi']
+        self.fig=Figure(figsize=(width*px,height*px),dpi=dpi)
         self.axes= self.fig.add_subplot(111)
         super(Canvas, self).__init__(self.fig)
+        self.setParent(parent)
 
 
 
