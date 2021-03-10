@@ -1,4 +1,4 @@
-#Start up window for TFRRS Visualizer
+#TFRRS Visualizer Program
 #By: Nick Meling and Matt Egts
 
 import sys
@@ -23,16 +23,14 @@ HEIGHT = 500
 
 class StartWindow(object):
     def setupStartWindow(self, MainWindow):
-    #Window set up
+#Window set up
         MainWindow.setGeometry(TOP,LEFT,WIDTH,HEIGHT)
-        #MainWindow.setFixedSize(700,500)
+        MainWindow.setFixedSize(700,500)
         MainWindow.setWindowTitle("TFRRS Visualizer")
         MainWindow.setStyleSheet("background-color: gray;")
         self.centralwidget = QWidget(MainWindow)
 
-
-    #Text description
-        #self.descriptionLabel= QLabel(MainWindow)
+#Text description
         self.descriptionLabel = QLabel("This program will allow you to visualize athlete statistics in Cross Country or Track and Field. You will be prompted to select NCAA Division, Gender, College, Sport, and Event.",
                                         self.centralwidget)
         self.descriptionLabel.setWordWrap(True)
@@ -41,8 +39,7 @@ class StartWindow(object):
         self.descriptionLabel.setGeometry((WIDTH-375)//2,10,375,325)
         self.descriptionLabel.setStyleSheet('QLabel {color: Orange}')
 
-    #Button to continue to next window
-        #self.continueButton= QPushButton(MainWindow)
+#Button to continue to next window
         self.continueButton = QPushButton("Click here to continue", self.centralwidget)
         self.continueButton.setGeometry(275,350,150,50)
         self.continueButton.setStyleSheet("background-color: orange;")
@@ -50,13 +47,14 @@ class StartWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
 
 class CollegeSelection(object):
+#Window set up for window that user selects Division, Gender, and College
     def setupCollegeSelection(self, MainWindow):
         MainWindow.setGeometry(TOP,LEFT,WIDTH,HEIGHT)
         MainWindow.setWindowTitle("TFRRS Visualizer")
         MainWindow.setStyleSheet("background-color: gray;")
         self.centralwidget = QWidget(MainWindow)
 
-    #Division Selector
+#Division Selector
         self.division = QComboBox(self.centralwidget)
         self.division.setGeometry(350,50,150,50)
         self.division.addItem('Divsion 1')
@@ -72,7 +70,7 @@ class CollegeSelection(object):
         self.divisionLabel.setStyleSheet('QLabel {color: Orange}')
         self.divisionLabel.setFont(QFont('Arial', 15))
 
-    #Gender Selector
+#Gender Selector
         self.gender= QComboBox(self.centralwidget)
         self.gender.setGeometry(350,150, 150, 50)
         self.gender.addItem('Male')
@@ -87,7 +85,7 @@ class CollegeSelection(object):
         self.genderLabel.setStyleSheet('QLabel {color: Orange}')
         self.genderLabel.setFont(QFont('Arial', 15))
 
-    #College Selector
+#College Selector
         self.college= QComboBox(self.centralwidget)
         self.college.setGeometry(350,250, 150, 50)
         self.name_id = db.get_div_teams(self.div, self.gen)
@@ -96,7 +94,6 @@ class CollegeSelection(object):
         self.college_id = self.name_id[0][1]
         self.college.setStyleSheet("background-color: orange;")
 
-
         self.collegeLabel= QLabel(self.centralwidget)
         self.collegeLabel.setText('College')
         self.collegeLabel.setGeometry(200,250,150,50)
@@ -104,7 +101,7 @@ class CollegeSelection(object):
         self.collegeLabel.setStyleSheet('QLabel {color: Orange}')
         self.collegeLabel.setFont(QFont('Arial', 15))
 
-    #Next Button
+#Next Button
         self.nextButton = QPushButton(self.centralwidget)
         self.nextButton.setText("Next")
         self.nextButton.setGeometry(300,400,100,50)
@@ -144,24 +141,25 @@ class AthleteSelection(object):
         MainWindow.setStyleSheet("background-color: gray;")
         self.centralwidget = QWidget(MainWindow)
 
-    #Athlete Selector
+#Athlete Selector
         self.athlete=QComboBox(self.centralwidget)
-        self.athlete.setGeometry(275,100,200,50)
+        self.athlete.setGeometry(250,25,200,50)
         self.athletes = db.get_team_roster(college_id)
         athlete_names = [name for name, id in self.athletes]
         self.ath_id = self.athletes[0][1]
         self.athlete.addItems(athlete_names)
         self.athlete.setStyleSheet("background-color: orange;")
-        #self.athlete.itemClicked(item) Need to be able to select the athletes.
+
         self.athleteLabel= QLabel(self.centralwidget)
         self.athleteLabel.setText("Athlete(s)")
         self.athleteLabel.setAlignment(Qt.AlignCenter)
-        self.athleteLabel.setGeometry(125,100,150,50)
+        self.athleteLabel.setGeometry(100,25,150,50)
         self.athleteLabel.setAlignment(Qt.AlignCenter)
         self.athleteLabel.setStyleSheet('QLabel {color: Orange}')
         self.athleteLabel.setFont(QFont("Arial", 15))
+        
 
-    #Season Selector
+#Season Selector
         self.season= QComboBox(self.centralwidget)
         self.season.setGeometry(100,250,200,50)
         seasons = db.get_athlete_seasons(self.ath_id)
@@ -176,7 +174,7 @@ class AthleteSelection(object):
         self.seasonLabel.setStyleSheet('QLabel {color: Orange}')
         self.seasonLabel.setFont(QFont("Arial", 15))
 
-    #Event Selector
+#Event Selector
         self.event= QComboBox(self.centralwidget)
         self.event.setGeometry(475,250,200,50)
         events = db.get_athlete_season_events(self.ath_id, self.season_picked)
@@ -191,7 +189,7 @@ class AthleteSelection(object):
         self.eventLabel.setStyleSheet('QLabel {color: Orange}')
         self.eventLabel.setFont(QFont("Arial", 15))
 
-    #Update Button
+#Update Button
         self.updateButton= QPushButton(self.centralwidget)
         self.updateButton.setText("Plot Selected Event")
         self.updateButton.setGeometry(375,400,150, 50)
@@ -199,13 +197,31 @@ class AthleteSelection(object):
 
         MainWindow.setCentralWidget(self.centralwidget)
 
-    #Back Button
+#Back Button
         self.backButton=QPushButton(self.centralwidget)
         self.backButton.setText("Back")
         self.backButton.setGeometry (175,400, 150, 50)
         self.backButton.setStyleSheet("background-color: orange;")
 
         MainWindow.setCentralWidget(self.centralwidget)
+
+#Add Athlete Button
+        self.addButton=QPushButton(self.centralwidget)
+        self.addButton.setText("+")
+        self.addButton.setGeometry(475,25,50,50)
+        self.addButton.setStyleSheet("background-color: orange;")
+        self.addButton.pressed.connect(self.action)
+
+        MainWindow.setCentralWidget(self.centralwidget)
+
+#Show second athlete selector when prompted by addButton
+    def action(self):
+
+        self.athlete2=QComboBox(self.centralwidget)
+        self.athlete2.setGeometry(250,100,200,50)
+        self.athlete2.setStyleSheet("background-color: orange;")
+        self.athlete2.show()
+        
 
     def seasonChange(self,i):
         self.season_picked = self.season.itemText(i)
@@ -235,10 +251,16 @@ class GraphViewer(object):
         self.centralwidget = QWidget(MainWindow)
 
 #Back Button on Graph
-        self.BackButton=QPushButton(self.centralwidget)
-        self.BackButton.setText("Back")
-        self.BackButton.setGeometry (275,450, 150, 50)
-        self.BackButton.setStyleSheet("background-color: orange;")
+        self.backButton=QPushButton(self.centralwidget)
+        self.backButton.setText("Back")
+        self.backButton.setGeometry (175,450, 150, 50)
+        self.backButton.setStyleSheet("background-color: orange;")
+
+#Button to go to statViewer window
+        self.statButton=QPushButton(self.centralwidget)
+        self.statButton.setText("View Athlete Stats")
+        self.statButton.setGeometry(375,450,150,50)
+        self.statButton.setStyleSheet("background-color: orange;")
 
 #Graph Formatting and Inputs
         sc = Canvas(self.centralwidget, width = 650, height = 400)
@@ -281,6 +303,56 @@ class Canvas(FigureCanvas):
         super(Canvas, self).__init__(self.fig)
         self.setParent(parent)
 
+class StatViewer(object):
+    def setupStatViewer(self, MainWindow):
+        MainWindow.setGeometry(TOP,LEFT,WIDTH,HEIGHT)
+        MainWindow.setWindowTitle("TFRRS Visualizer")
+        MainWindow.setStyleSheet("background-color: gray;")
+        self.centralwidget = QWidget(MainWindow)
+
+#Statistics description label
+        self.statDescriptionLabel = QLabel(self.centralwidget)
+        self.statDescriptionLabel.setText("Statistics for Selected Athlete(s) and Event")
+        self.statDescriptionLabel.setGeometry(150,25,400,50)
+        self.statDescriptionLabel.setStyleSheet('QLabel {color: Orange}')
+        self.statDescriptionLabel.setFont(QFont("Arial", 20))
+
+#Athlete 1 Name
+        self.ath1 = QLabel(self.centralwidget)
+        self.ath1.setText("Athlete 1 Goes Here")
+        self.ath1.setGeometry(50,100,150,25)
+        self.ath1.setStyleSheet('QLabel {color: Orange}')
+        self.ath1.setFont(QFont("Arial", 15))
+
+#Personal Best Label
+        self.pbLabel = QLabel(self.centralwidget)
+        self.pbLabel.setText("Personal Best")
+        self.pbLabel.setGeometry(25,150,150,25)
+        self.pbLabel.setStyleSheet('QLabel {color: Orange}')
+    #Need PB Input
+        
+#Personal Best 1st Year
+        self.pb1Label = QLabel(self.centralwidget)
+        self.pb1Label.setText("Personal Best First Year")
+        self.pb1Label.setGeometry(25,200,150,25)
+        self.pb1Label.setStyleSheet('QLabel {color: Orange}')
+
+
+#Button to close the program
+        self.closeButton = QPushButton(self.centralwidget)
+        self.closeButton.setText("Close")
+        self.closeButton.setGeometry(175,450,150,50)
+        self.closeButton.setStyleSheet("background-color: orange;")
+        self.closeButton.setFont(QFont('Arial', 15))
+
+#Button to go back to the startWindow
+        self.restartButton = QPushButton(self.centralwidget)
+        self.restartButton.setText("Restart Selection")
+        self.restartButton.setGeometry(375,450,150,50)
+        self.restartButton.setStyleSheet("background-color: orange;")
+        self.restartButton.setFont(QFont('Arial', 15))
+
+        MainWindow.setCentralWidget(self.centralwidget)
 
 
 class MainWindow(QMainWindow):
@@ -291,6 +363,7 @@ class MainWindow(QMainWindow):
         self.collegeSelection = CollegeSelection()
         self.athleteSelection = AthleteSelection()
         self.graphViewer = GraphViewer()
+        self.statViewer = StatViewer()
         self.startStartWindow()
 
     def startStartWindow(self):
@@ -320,7 +393,13 @@ class MainWindow(QMainWindow):
 
     def startGraphViewer(self):
         self.graphViewer.setupGraphViewer(self, self.athleteSelection.ath_id, self.athleteSelection.event_picked, self.athleteSelection.season_picked)
-        self.graphViewer.BackButton.clicked.connect(self.startAthleteSelection)
+        self.graphViewer.backButton.clicked.connect(self.startAthleteSelection)
+        self.graphViewer.statButton.clicked.connect(self.startStatViewer)
+        self.show()
+
+    def startStatViewer(self):
+        self.statViewer.setupStatViewer(self)
+        self.statViewer.restartButton.clicked.connect(self.startCollegeSelection)
         self.show()
 
 if __name__ == '__main__':

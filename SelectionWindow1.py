@@ -15,7 +15,7 @@ def window():
     win.setStyleSheet("background-color: gray;")
 
 #Division Selector
-    division= QComboBox(win)
+    division= QListWidget(win)
     division.setGeometry(350,50,150,50)
     division.addItem('Divsion 1')
     division.addItem('Divison 2')
