@@ -317,25 +317,84 @@ class StatViewer(object):
         self.statDescriptionLabel.setStyleSheet('QLabel {color: Orange}')
         self.statDescriptionLabel.setFont(QFont("Arial", 20))
 
-#Athlete 1 Name
+#Athlete 1 Name and Stats
         self.ath1 = QLabel(self.centralwidget)
         self.ath1.setText("Athlete 1 Goes Here")
-        self.ath1.setGeometry(50,100,150,25)
-        self.ath1.setStyleSheet('QLabel {color: Orange}')
+        self.ath1.setGeometry(75,100,150,25)
+        self.ath1.setStyleSheet('QLabel {font-weight: bold; color: Orange}')
         self.ath1.setFont(QFont("Arial", 15))
 
+        self.ath1PR = QLabel(self.centralwidget)
+        self.ath1PR.setText("3.56")
+        self.ath1PR.setGeometry(75,150,150,25)
+        self.ath1PR.setAlignment(Qt.AlignCenter)
+
+        self.ath1PR1 = QLabel(self.centralwidget)
+        self.ath1PR1.setText("3.56")
+        self.ath1PR1.setGeometry(75,200,150,25)
+        self.ath1PR1.setAlignment(Qt.AlignCenter)
+
+        self.ath1Imp = QLabel(self.centralwidget)
+        self.ath1Imp.setText("3.56")
+        self.ath1Imp.setGeometry(75,250,150,25)
+        self.ath1Imp.setAlignment(Qt.AlignCenter)
+
+        self.ath1Imp1 = QLabel(self.centralwidget)
+        self.ath1Imp1.setText("3.56")
+        self.ath1Imp1.setGeometry(75,300,150,25)
+        self.ath1Imp1.setAlignment(Qt.AlignCenter)
+
+#Athlete 2 Name
+        self.ath2 =QLabel(self.centralwidget)
+        self.ath2.setText("Athlete 2 Goes Here")
+        self.ath2.setGeometry(475,100,150,25)
+        self.ath2.setStyleSheet('QLabel {font-weight: bold; color: Orange}')
+        self.ath2.setFont(QFont("Arial", 15))
+
+        self.ath2PR = QLabel(self.centralwidget)
+        self.ath2PR.setText("3.56")
+        self.ath2PR.setGeometry(475,150,150,25)
+        self.ath2PR.setAlignment(Qt.AlignCenter)
+
+        self.ath2PR1 = QLabel(self.centralwidget)
+        self.ath2PR1.setText("3.56")
+        self.ath2PR1.setGeometry(475,200,150,25)
+        self.ath2PR1.setAlignment(Qt.AlignCenter)
+
+        self.ath2Imp = QLabel(self.centralwidget)
+        self.ath2Imp.setText("3.56")
+        self.ath2Imp.setGeometry(475,250,150,25)
+        self.ath2Imp.setAlignment(Qt.AlignCenter)
+
+        self.ath2Imp1 = QLabel(self.centralwidget)
+        self.ath2Imp1.setText("3.56")
+        self.ath2Imp1.setGeometry(475,300,150,25)
+        self.ath2Imp1.setAlignment(Qt.AlignCenter)
+
 #Personal Best Label
-        self.pbLabel = QLabel(self.centralwidget)
-        self.pbLabel.setText("Personal Best")
-        self.pbLabel.setGeometry(25,150,150,25)
-        self.pbLabel.setStyleSheet('QLabel {color: Orange}')
+        self.prLabel = QLabel(self.centralwidget)
+        self.prLabel.setText("PR")
+        self.prLabel.setGeometry(300,150,100,25)
+        self.prLabel.setStyleSheet('QLabel {font-weight: bold; color: Orange}')
     #Need PB Input
         
 #Personal Best 1st Year
-        self.pb1Label = QLabel(self.centralwidget)
-        self.pb1Label.setText("Personal Best First Year")
-        self.pb1Label.setGeometry(25,200,150,25)
-        self.pb1Label.setStyleSheet('QLabel {color: Orange}')
+        self.pr1Label = QLabel(self.centralwidget)
+        self.pr1Label.setText("PR (First Year)")
+        self.pr1Label.setGeometry(300,200,100,25)
+        self.pr1Label.setStyleSheet('QLabel {font-weight: bold; color: Orange}')
+
+#Improvement Overall
+        self.OverallImpLabel = QLabel(self.centralwidget)
+        self.OverallImpLabel.setText("Overall Imp")
+        self.OverallImpLabel.setGeometry(300,250,100,25)
+        self.OverallImpLabel.setStyleSheet('QLabel {font-weight: bold; color: Orange}')
+
+#Improvement First Year
+        self.Imp1Label= QLabel(self.centralwidget)
+        self.Imp1Label.setText("Imp (First Year)")
+        self.Imp1Label.setGeometry(300,300,100,25)
+        self.Imp1Label.setStyleSheet('QLabel {font-weight: bold; color: Orange}')
 
 
 #Button to close the program
