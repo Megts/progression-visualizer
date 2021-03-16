@@ -39,12 +39,13 @@ class DB:
         teams = teams.fetchall()
         return teams
 
-    def get_team_roster(self, team_id):
+    def get_team_roster(self, team_id, athlete_ids = []):
         self._start_connection()
-        roster = self.curr.execute("""SELECT (first_name || ' ' || last_name) as name, athlete_id
+        ath_ids = str(athlete_ids).replace('[',"(").replace(']',')')
+        cmd = f"""SELECT (first_name || ' ' || last_name) as name, athlete_id
                                 FROM Athletes
-                                WHERE college_id = ?""",
-                                 (team_id,))
+                                WHERE college_id = {team_id!r} AND athlete_id NOT IN {ath_ids}"""
+        roster = self.curr.execute(cmd)
         roster = roster.fetchall()
         self._close_connection()
         return roster
