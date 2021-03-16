@@ -158,7 +158,7 @@ class AthleteSelection(object):
         self.athleteLabel.setAlignment(Qt.AlignCenter)
         self.athleteLabel.setStyleSheet('QLabel {color: Orange}')
         self.athleteLabel.setFont(QFont("Arial", 15))
-        
+
 
 #Season Selector
         self.season= QComboBox(self.centralwidget)
@@ -213,7 +213,7 @@ class AthleteSelection(object):
         self.statButton.setStyleSheet("background-color: orange;")
 
         MainWindow.setCentralWidget(self.centralwidget)
-        
+
 #Add Athlete Button
         self.addButton=QPushButton(self.centralwidget)
         self.addButton.setText("+")
@@ -223,7 +223,7 @@ class AthleteSelection(object):
 
         MainWindow.setCentralWidget(self.centralwidget)
 
-       
+
 
 #Show second athlete selector when prompted by addButton
     def action(self):
@@ -232,14 +232,15 @@ class AthleteSelection(object):
         self.athlete2.setGeometry(250,100,200,50)
         self.athlete2.setStyleSheet("background-color: orange;")
 
+        print(self.college_id, [self.ath_id], self.season_picked, self.event_picked)
         self.athletes2 = db.get_remaining_team_roster(self.college_id, [self.ath_id], self.season_picked, self.event_picked)
         self.ath_id2 = self.athletes2[0][1]
-        athlete_names2 = [name for name, id in self.athletes]
+        athlete_names2 = [name for name, id in self.athletes2]
         self.athlete2.addItems(athlete_names2)
-        
+
 
         self.athlete2.show()
-        
+
 
     def seasonChange(self,i):
         self.season_picked = self.season.itemText(i)
@@ -393,7 +394,7 @@ class StatViewer(object):
         self.prLabel.setGeometry(300,150,100,25)
         self.prLabel.setStyleSheet('QLabel {font-weight: bold; color: Orange}')
     #Need PB Input
-        
+
 #Personal Best 1st Year
         self.pr1Label = QLabel(self.centralwidget)
         self.pr1Label.setText("PR (First Year)")
@@ -463,7 +464,7 @@ class MainWindow(QMainWindow):
     def startGraphViewer(self):
         self.graphViewer.setupGraphViewer(self, self.athleteSelection.ath_id, self.athleteSelection.event_picked, self.athleteSelection.season_picked)
         self.graphViewer.backButton.clicked.connect(self.startAthleteSelection)
-        
+
         self.show()
 
     def startStatViewer(self):
