@@ -84,6 +84,20 @@ class DB:
         self._close_connection()
         return self._tuplist_to_list(seasons)
 
+    def get_athletes_overlaping_seasons(self,athlete_ids):
+        self._start_connection()
+        tables_to_intersect = []
+        cmd = """SELECT u.season FROM ( """
+        for i in range(len(athlete_ids)):
+            cmd += f"""SELECT season FROM Performances WHERE athlete_id = {athlete_ids[i]}"""
+            if i < len(athlete_ids)-1:
+                cmd += """ INTERSECT """
+        cmd += """) as u"""
+        seasons = self.curr.execute(cmd)
+        seasons = seasons.fetchall()
+        self._close_connection()
+        return self._tuplist_to_list(seasons)
+
     def get_athlete_season_events(self, athlete_id, season):
         self._start_connection()
         events = self.curr.execute("""SELECT DISTINCT event_name
