@@ -39,12 +39,27 @@ class DB:
         teams = teams.fetchall()
         return teams
 
-    def get_team_roster(self, team_id, athlete_ids = []):
+    def get_init_team_roster(slef, team_id):
         self._start_connection()
         ath_ids = str(athlete_ids).replace('[',"(").replace(']',')')
         cmd = f"""SELECT (first_name || ' ' || last_name) as name, athlete_id
                                 FROM Athletes
-                                WHERE college_id = {team_id!r} AND athlete_id NOT IN {ath_ids}"""
+                                WHERE college_id = {team_id!r}"""
+        roster = self.curr.execute(cmd)
+        roster = roster.fetchall()
+        self._close_connection()
+        return roster
+
+    def get_remaining_team_roster(self, team_id, athlete_ids = [], season, event):
+        self._start_connection()
+        ath_ids = str(athlete_ids).replace('[',"(").replace(']',')')
+        cmd = f"""SELECT (first_name || ' ' || last_name) as name, a.athlete_id
+                                FROM Athletes as a
+                                INNER JOIN (SELECT DISTINCT season, event_name, p.athlete_id
+                                            FROM Performances as p) as perf
+                                ON a.athlete_id = perf.athlete_id
+                                WHERE college_id = {team_id!r} AND a.athlete_id NOT IN {ath_ids}
+                                AND perf.season = {season!r} AND perf.event_name = {event!r}"""
         roster = self.curr.execute(cmd)
         roster = roster.fetchall()
         self._close_connection()
