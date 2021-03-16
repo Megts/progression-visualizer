@@ -192,7 +192,7 @@ class AthleteSelection(object):
 #Update Button
         self.updateButton= QPushButton(self.centralwidget)
         self.updateButton.setText("Plot Selected Event")
-        self.updateButton.setGeometry(375,400,150, 50)
+        self.updateButton.setGeometry(275,425,150, 50)
         self.updateButton.setStyleSheet("background-color: orange;")
 
         MainWindow.setCentralWidget(self.centralwidget)
@@ -200,11 +200,19 @@ class AthleteSelection(object):
 #Back Button
         self.backButton=QPushButton(self.centralwidget)
         self.backButton.setText("Back")
-        self.backButton.setGeometry (175,400, 150, 50)
+        self.backButton.setGeometry (50,425, 150, 50)
         self.backButton.setStyleSheet("background-color: orange;")
 
         MainWindow.setCentralWidget(self.centralwidget)
 
+#Button to go to statViewer window
+        self.statButton=QPushButton(self.centralwidget)
+        self.statButton.setText("View Athlete Stats")
+        self.statButton.setGeometry(500,425,150,50)
+        self.statButton.setStyleSheet("background-color: orange;")
+
+        MainWindow.setCentralWidget(self.centralwidget)
+        
 #Add Athlete Button
         self.addButton=QPushButton(self.centralwidget)
         self.addButton.setText("+")
@@ -253,14 +261,12 @@ class GraphViewer(object):
 #Back Button on Graph
         self.backButton=QPushButton(self.centralwidget)
         self.backButton.setText("Back")
-        self.backButton.setGeometry (175,450, 150, 50)
+        self.backButton.setGeometry (275,425, 150, 50)
         self.backButton.setStyleSheet("background-color: orange;")
 
-#Button to go to statViewer window
-        self.statButton=QPushButton(self.centralwidget)
-        self.statButton.setText("View Athlete Stats")
-        self.statButton.setGeometry(375,450,150,50)
-        self.statButton.setStyleSheet("background-color: orange;")
+        MainWindow.setCentralWidget(self.centralwidget)
+
+
 
 #Graph Formatting and Inputs
         sc = Canvas(self.centralwidget, width = 650, height = 400)
@@ -397,19 +403,12 @@ class StatViewer(object):
         self.Imp1Label.setStyleSheet('QLabel {font-weight: bold; color: Orange}')
 
 
-#Button to close the program
-        self.closeButton = QPushButton(self.centralwidget)
-        self.closeButton.setText("Close")
-        self.closeButton.setGeometry(175,450,150,50)
-        self.closeButton.setStyleSheet("background-color: orange;")
-        self.closeButton.setFont(QFont('Arial', 15))
-
-#Button to go back to the startWindow
-        self.restartButton = QPushButton(self.centralwidget)
-        self.restartButton.setText("Restart Selection")
-        self.restartButton.setGeometry(375,450,150,50)
-        self.restartButton.setStyleSheet("background-color: orange;")
-        self.restartButton.setFont(QFont('Arial', 15))
+#Button to go back to athlete selector window
+        self.backButton = QPushButton(self.centralwidget)
+        self.backButton.setText("Back")
+        self.backButton.setGeometry(275,425,150,50)
+        self.backButton.setStyleSheet("background-color: orange;")
+        self.backButton.setFont(QFont('Arial', 15))
 
         MainWindow.setCentralWidget(self.centralwidget)
 
@@ -448,17 +447,18 @@ class MainWindow(QMainWindow):
         self.athleteSelection.season.activated.connect(self.athleteSelection.seasonChange)
         self.athleteSelection.event.activated.connect(self.athleteSelection.eventChange)
         self.athleteSelection.athlete.activated.connect(self.athleteSelection.athleteChange)
+        self.athleteSelection.statButton.clicked.connect(self.startStatViewer)
         self.show()
 
     def startGraphViewer(self):
         self.graphViewer.setupGraphViewer(self, self.athleteSelection.ath_id, self.athleteSelection.event_picked, self.athleteSelection.season_picked)
         self.graphViewer.backButton.clicked.connect(self.startAthleteSelection)
-        self.graphViewer.statButton.clicked.connect(self.startStatViewer)
+        
         self.show()
 
     def startStatViewer(self):
         self.statViewer.setupStatViewer(self)
-        self.statViewer.restartButton.clicked.connect(self.startCollegeSelection)
+        self.statViewer.backButton.clicked.connect(self.startAthleteSelection)
         self.show()
 
 if __name__ == '__main__':
