@@ -136,6 +136,7 @@ class CollegeSelection(object):
 
 class AthleteSelection(object):
     def setupAthleteSelection(self, MainWindow, college_id):
+        self.college_id = college_id
         MainWindow.setGeometry(TOP,LEFT,WIDTH,HEIGHT)
         MainWindow.setWindowTitle("TFRRS Visualizer")
         MainWindow.setStyleSheet("background-color: gray;")
@@ -144,7 +145,7 @@ class AthleteSelection(object):
 #Athlete Selector
         self.athlete=QComboBox(self.centralwidget)
         self.athlete.setGeometry(250,25,200,50)
-        self.athletes = db.get_init_team_roster(college_id)
+        self.athletes = db.get_init_team_roster(self.college_id)
         athlete_names = [name for name, id in self.athletes]
         self.ath_id = self.athletes[0][1]
         self.athlete.addItems(athlete_names)
@@ -222,12 +223,21 @@ class AthleteSelection(object):
 
         MainWindow.setCentralWidget(self.centralwidget)
 
+       
+
 #Show second athlete selector when prompted by addButton
     def action(self):
 
         self.athlete2=QComboBox(self.centralwidget)
         self.athlete2.setGeometry(250,100,200,50)
         self.athlete2.setStyleSheet("background-color: orange;")
+
+        self.athletes2 = db.get_remaining_team_roster(self.college_id, [self.ath_id], self.season_picked, self.event_picked)
+        self.ath_id2 = self.athletes2[0][1]
+        athlete_names2 = [name for name, id in self.athletes]
+        self.athlete2.addItems(athlete_names2)
+        
+
         self.athlete2.show()
         
 
