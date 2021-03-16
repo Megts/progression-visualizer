@@ -41,7 +41,6 @@ class DB:
 
     def get_init_team_roster(self, team_id):
         self._start_connection()
-        ath_ids = str(athlete_ids).replace('[',"(").replace(']',')')
         cmd = f"""SELECT (first_name || ' ' || last_name) as name, athlete_id
                                 FROM Athletes
                                 WHERE college_id = {team_id!r}"""
