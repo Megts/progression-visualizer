@@ -39,7 +39,7 @@ class DB:
         teams = teams.fetchall()
         return teams
 
-    def get_init_team_roster(slef, team_id):
+    def get_init_team_roster(self, team_id):
         self._start_connection()
         ath_ids = str(athlete_ids).replace('[',"(").replace(']',')')
         cmd = f"""SELECT (first_name || ' ' || last_name) as name, athlete_id
@@ -50,7 +50,7 @@ class DB:
         self._close_connection()
         return roster
 
-    def get_remaining_team_roster(self, team_id, athlete_ids = [], season, event):
+    def get_remaining_team_roster(self, team_id, athlete_ids, season, event):
         self._start_connection()
         ath_ids = str(athlete_ids).replace('[',"(").replace(']',')')
         cmd = f"""SELECT (first_name || ' ' || last_name) as name, a.athlete_id

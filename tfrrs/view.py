@@ -144,7 +144,7 @@ class AthleteSelection(object):
 #Athlete Selector
         self.athlete=QComboBox(self.centralwidget)
         self.athlete.setGeometry(250,25,200,50)
-        self.athletes = db.get_team_roster(college_id)
+        self.athletes = db.get_init_team_roster(college_id)
         athlete_names = [name for name, id in self.athletes]
         self.ath_id = self.athletes[0][1]
         self.athlete.addItems(athlete_names)
