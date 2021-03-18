@@ -157,6 +157,56 @@ class DB:
                 dates.append(datetime(year,month + 1,day))
         return marks,dates,units,wind2,wind4
 
+
+
+
+    def get_athlete2_results(self,athlete_id,event_name,season):
+        print(athlete_id,event_name,season)
+        self._start_connection()
+        performances = self.curr.execute("""SELECT min,sec_or_meters,wind_legal2,wind_legal4,day,month,year
+                                          FROM Performances
+                                          WHERE athlete_id = ? AND event_name = ? AND season = ?
+                                          ORDER BY year, month, day""", (
+                                                athlete_id,
+                                                event_name,
+                                                season
+                                        ))
+        performances = performances.fetchall()
+        units = self.curr.execute("""SELECT DISTINCT time_or_dist FROM Performances
+                                     WHERE athlete_id = ? AND event_name = ? AND season = ?""", (
+                                           athlete_id,
+                                           event_name,
+                                           season
+                                  ))
+        units = units.fetchall()
+        units = units[0][0]
+        marks = []
+        dates = []
+        wind2 = []
+        wind4 = []
+        if units == 'dist':
+            units = 'Meters'
+            for min, meters, windL2, windL4, day, month, year in performances:
+                marks.append(meters)
+                wind2.append(windL2)
+                wind4.append(windL4)
+                dates.append(datetime(year,month+1,day))
+        else:
+            units = 'Time'
+            for min, seconds, windL2, windL4, day, month, year in performances:
+                if seconds is not None:
+                    sec = int(seconds)
+                    micro = int((seconds-sec) * 10**6)
+                    if min is None:
+                        min = 0
+                    marks.append(datetime(3,3,15,minute=min,second=sec,microsecond=micro))
+                else:
+                    marks.append(None)
+                wind2.append(windL2)
+                wind4.append(windL4)
+                dates.append(datetime(year,month + 1,day))
+        return marks,dates,units,wind2,wind4
+
     def _tuplist_to_list(self, tuplist):
         return [item for tup in tuplist for item in tup]
 
@@ -171,3 +221,19 @@ class DB:
         if min is not None:
             return min + seconds/60
         return None
+#Athlete 1 Personal Record (We need min for sec and Max for meters how do we fix this?)
+    def get_athlete_pr(self,athlete_id, event_name )
+        self._start_connection()
+        pr = self.curr.execute("""Select min(sec_or_meters)
+                                    FROM Performances
+                                    WHERE athlete_id = ? AND event_name = ?""",(
+                                    athlete_id, event_name
+                                ))
+        pr = pr.fetchall()
+        self._close_connection()
+        return pr
+
+    def get_athlete_first_year_pr
+        
+
+  
