@@ -324,7 +324,7 @@ class Canvas(FigureCanvas):
         self.setParent(parent)
 
 class StatViewer(object):
-    def setupStatViewer(self, MainWindow):
+    def setupStatViewer(self, MainWindow, athlete_id):
         MainWindow.setGeometry(TOP,LEFT,WIDTH,HEIGHT)
         MainWindow.setWindowTitle("TFRRS Visualizer")
         MainWindow.setStyleSheet("background-color: gray;")
@@ -345,7 +345,8 @@ class StatViewer(object):
         self.ath1.setFont(QFont("Arial", 15))
 
         self.ath1PR = QLabel(self.centralwidget)
-        self.ath1PR.setText("3.56")
+        test = db.get_athlete_pr(self, athlete_id, event_name)
+        self.ath1PR.setText(test)
         self.ath1PR.setGeometry(75,150,150,25)
         self.ath1PR.setAlignment(Qt.AlignCenter)
 
@@ -471,7 +472,7 @@ class MainWindow(QMainWindow):
         self.show()
 
     def startStatViewer(self):
-        self.statViewer.setupStatViewer(self)
+        self.statViewer.setupStatViewer(self, athlete_id)
         self.statViewer.backButton.clicked.connect(self.startAthleteSelection)
         self.show()
 
