@@ -229,3 +229,65 @@ class DB:
         return dt - td
     def _2digs(self, num):
         return ('0' + str(num))[-2:]
+    def to_seconds(self,min,seconds):
+        if seconds is not None:
+            if min is not None:
+                    return min*60 + seconds
+            return seconds
+        return None
+
+    def to_minutes(self,min,seconds):
+        if min is not None:
+            return min + seconds/60
+        return None
+#Athlete 1 Personal Record (We need min for sec and Max for meters how do we fix this?)
+    def get_athlete_pr(self,athlete_id, event_name):
+        self._start_connection()
+        if self._get_units(event_name) == 'dist':
+            order = 'DESC'
+        else:
+            order = 'ASC'
+        pr = self.curr.execute("""SELECT min, sec_or_meters
+                                    FROM Performances
+                                    WHERE athlete_id = ? AND event_name = ?
+                                    ORDER BY min, sec_or_meters ?
+                                    Limit 1""",(
+                                    athlete_id, event_name, order
+                                ))
+        pr = pr.fetchall()
+        self._close_connection()
+        return pr
+
+    def get_athlete_first_year_pr(self, athlete_id, event_name):
+        self._start_connection()
+        if self._get_units(event_name) == 'dist':
+            order = 'DESC'
+        else:
+            order = 'ASC'
+        pr1= self.curr.execute("""SELECT min, sec_or_meters, year
+                                    FROM Performances
+                                    WHERE athlete_id= ? AND event_name = ?
+                                    ORDER BY year asc, min, sec_or_meters ?
+                                    LIMIT 1""",(
+                                    athlete_id, event_name, order
+                                    ))
+        pr1= pr1.fetchall()
+        self._close_connection()
+        return pr1
+
+    def get_athlete_first_year_slowest(self, athlete_id, event_name):
+        self._start_connection()
+        if self._get_units(event_name) == 'dist':
+            order = 'ASC'
+        else:
+            order = 'DESC'
+        slowest = self.curr.execute("""SELECT min, sec_or_meters
+                                        FROM Performances
+                                        WHERE athlete_id = ? AND event_name = ?
+                                        ORDER BY year asc, min, sec_or_meters ?
+                                        LIMIT 1""",(
+                                        athlete_id, event_name, order
+                                        ))
+        slowest=slowest.fetchall()
+        self._close_connection()
+        return slowest
