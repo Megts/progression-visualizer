@@ -2,7 +2,7 @@
 # queries for getting information from the database
 
 import sqlite3
-from numpy import datetime64
+from numpy import datetime64, timedelta64
 
 class DB:
 
@@ -119,7 +119,7 @@ class DB:
         performances = self.curr.execute("""SELECT min,sec_or_meters,wind_legal2,wind_legal4,day,month,year
                                           FROM Performances
                                           WHERE athlete_id = ? AND event_name = ? AND season = ?
-                                          ORDER BY year, month, day""", (
+                                          ORDER BY year, month DESC, day DESC""", (
                                                 athlete_id,
                                                 event_name,
                                                 season
@@ -133,6 +133,11 @@ class DB:
                                   ))
         units = units.fetchall()
         units = units[0][0]
+        season_year = performances[0][6]
+        if performances[0][5] == 11:
+            season_year += 1
+        year1 = season_year
+        completed_seasons = []
         marks = []
         dates = []
         wind2 = []
@@ -143,7 +148,25 @@ class DB:
                 marks.append(meters)
                 wind2.append(windL2)
                 wind4.append(windL4)
-                dates.append(self._date_to_dt(year,month,day))
+                dates.append(self._date_to_std_dt(year,month,day, year1))
+                if season == 'Indoor':
+                    if year >= season_year and month > 3:
+                        season_year = year
+                        if month == 11:
+                            season_year += 1
+                        completed_seasons.append([marks,wind2,wind4,dates])
+                        marks = []
+                        dates = []
+                        wind2 = []
+                        wind4 = []
+                else:
+                    if year > season_year:
+                        season_year = year
+                        completed_seasons.append([marks,wind2,wind4,dates])
+                        marks = []
+                        dates = []
+                        wind2 = []
+                        wind4 = []
         else:
             units = 'Time'
             for min, seconds, windL2, windL4, day, month, year in performances:
@@ -152,20 +175,38 @@ class DB:
                     marks.append(seconds)
                     wind2.append(windL2)
                     wind4.append(windL4)
-                    dates.append(self._date_to_dt(year,month,day))
+                    dates.append(self._date_to_std_dt(year,month,day, year1))
                 else:
                     if seconds is not None:
                         sec = int(seconds)
                         hundreth = int((seconds-sec) * 100)
                         if min is None:
                             min = 0
-                        marks.append(self._time_to_dt(min,sec,hundreth))
+                        marks.append(self._date_to_std_dt(year,month,day, year1))
                     else:
                         marks.append(None)
                     wind2.append(windL2)
                     wind4.append(windL4)
-                    dates.append(self._date_to_dt(year,month,day))
-        return marks,dates,units,wind2,wind4
+                    dates.append(self._date_to_std_dt(year,month,day, year1))
+                if season in ['Indoor', 'XC']:
+                    if year >= season_year and month > 3:
+                        season_year = year
+                        if month == 11 and season == 'Indoor':
+                            season_year += 1
+                        completed_seasons.append([marks,wind2,wind4,dates])
+                        marks = []
+                        dates = []
+                        wind2 = []
+                        wind4 = []
+                else:
+                    if year >= season_year and month:
+                        season_year = year
+                        completed_seasons.append([marks,wind2,wind4,dates])
+                        marks = []
+                        dates = []
+                        wind2 = []
+                        wind4 = []
+        return completed_seasons, units
 
     def _get_units(self, event_name):
         self._start_connection()
@@ -173,64 +214,18 @@ class DB:
                                     WHERE event_name = ?""", (event_name,)).fetchall()
         return unit[0][0]
 
-
-
-    def get_athlete2_results(self,athlete_id,event_name,season):
-        print(athlete_id,event_name,season)
-        self._start_connection()
-        performances = self.curr.execute("""SELECT min,sec_or_meters,wind_legal2,wind_legal4,day,month,year
-                                          FROM Performances
-                                          WHERE athlete_id = ? AND event_name = ? AND season = ?
-                                          ORDER BY year, month, day""", (
-                                                athlete_id,
-                                                event_name,
-                                                season
-                                        ))
-        performances = performances.fetchall()
-        units = self.curr.execute("""SELECT DISTINCT time_or_dist FROM Performances
-                                     WHERE athlete_id = ? AND event_name = ? AND season = ?""", (
-                                           athlete_id,
-                                           event_name,
-                                           season
-                                  ))
-        units = units.fetchall()
-        units = units[0][0]
-        marks = []
-        dates = []
-        wind2 = []
-        wind4 = []
-        if units == 'dist':
-            units = 'Meters'
-            for min, meters, windL2, windL4, day, month, year in performances:
-                marks.append(meters)
-                wind2.append(windL2)
-                wind4.append(windL4)
-                dates.append(datetime(year,month+1,day))
-        else:
-            units = 'Time'
-            for min, seconds, windL2, windL4, day, month, year in performances:
-                if seconds is not None:
-                    sec = int(seconds)
-                    micro = int((seconds-sec) * 10**6)
-                    if min is None:
-                        min = 0
-                    marks.append(datetime(3,3,15,minute=min,second=sec,microsecond=micro))
-                else:
-                    marks.append(None)
-                wind2.append(windL2)
-                wind4.append(windL4)
-                dates.append(datetime(year,month + 1,day))
-        return marks,dates,units,wind2,wind4
-
     def _tuplist_to_list(self, tuplist):
         return [item for tup in tuplist for item in tup]
 
     def _time_to_dt(self, min,sec,hundreth):
         min = ('0' + str(min))[-2:]
-        return datetime64(f'0001-01-01T00:{self._2digs(min)}:{sec}.{hundreth}')
+        return datetime64(f'0001-01-01T00:{self._2digs(min)}:{self._2digs(sec)}.{hundreth}')
 
-    def _date_to_dt(self,year,month,day):
-        return datetime64(f'{year}-{self._2digs(month+1)}-{self._2digs(day)}')
-
+    def _date_to_std_dt(self,year,month,day, year1):
+        dt = datetime64(f'{year}-{self._2digs(month+1)}-{self._2digs(day)}')
+        if year < year1:
+            return dt
+        td = datetime64(f'{year1}-01-01')-datetime64(f'{year}-01-01')
+        return dt - td
     def _2digs(self, num):
         return ('0' + str(num))[-2:]

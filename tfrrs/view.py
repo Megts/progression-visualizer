@@ -282,13 +282,17 @@ class GraphViewer(object):
 #Graph Formatting and Inputs
         sc = Canvas(self.centralwidget, width = 650, height = 400)
         sc.move((WIDTH-650)//2,0)
-        marks, dates, units, wind2, wind4 = db.get_athlete_results(athlete_id, event_name, season)
-        marks, dates, units, wind2, wind4 = db.get_athlete2_results(athlete_id, event_name, season)
-        sc.axes.plot(dates, marks, color = 'orange', marker = 'o', linestyle = 'None')
-        sc.axes.plot(dates, marks, color = 'black', marker ='.')
         ath_name = db.get_ahtlete_name(athlete_id)
+        completed_seasons, units = db.get_athlete_results(athlete_id, event_name, season)
+#        marks, dates, units, wind2, wind4 = db.get_athlete_results(athlete_id, event_name, season)
+        colors =['orange','b','r','g','pink']
+        color_i = 0
+        for year in completed_seasons:
+            marks,wind2,wind4,dates = year
+            sc.axes.plot(dates, marks, color = 'colors[color_i]', marker = 'o', label = np.date_as_str(dates[0], unit = 'Y'))
+            sc.axes.plot(dates, marks, color = 'black', marker ='.')
         #ath_name2 = db.get_athlete_name(athlete_id)
-        sc.axes.set(xlabel = "Years", ylabel = units, title = '{} - {} {}'.format(ath_name,season,event_name))
+        sc.axes.set(xlabel = "Years", ylabel = units, title = f'{ath_name} - {season} {event_name}')
 
         years = mdates.YearLocator()
         months = mdates.MonthLocator()
@@ -300,9 +304,6 @@ class GraphViewer(object):
         sc.axes.xaxis.set_major_formatter(years_fmt)
         sc.axes.xaxis.set_minor_locator(months)
 
-        datemin = datetime(dates[0].year,1,1)
-        datemax = datetime(dates[-1].year + 1,1,1)
-        sc.axes.set_xlim(datemin,datemax)
         if units != 'Meters':
             print('formatting y axis')
             sc.axes.yaxis.set_major_locator(time)
