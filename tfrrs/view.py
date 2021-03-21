@@ -283,8 +283,11 @@ class GraphViewer(object):
         sc = Canvas(self.centralwidget, width = 650, height = 400)
         sc.move((WIDTH-650)//2,0)
         marks, dates, units, wind2, wind4 = db.get_athlete_results(athlete_id, event_name, season)
+        marks, dates, units, wind2, wind4 = db.get_athlete2_results(athlete_id, event_name, season)
         sc.axes.plot(dates, marks, color = 'orange', marker = 'o', linestyle = 'None')
+        sc.axes.plot(dates, marks, color = 'black', marker ='.')
         ath_name = db.get_ahtlete_name(athlete_id)
+        #ath_name2 = db.get_athlete_name(athlete_id)
         sc.axes.set(xlabel = "Years", ylabel = units, title = '{} - {} {}'.format(ath_name,season,event_name))
 
         years = mdates.YearLocator()
