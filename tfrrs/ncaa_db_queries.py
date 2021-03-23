@@ -125,14 +125,7 @@ class DB:
                                                 season
                                         ))
         performances = performances.fetchall()
-        units = self.curr.execute("""SELECT DISTINCT time_or_dist FROM Performances
-                                     WHERE athlete_id = ? AND event_name = ? AND season = ?""", (
-                                           athlete_id,
-                                           event_name,
-                                           season
-                                  ))
-        units = units.fetchall()
-        units = units[0][0]
+        units = self._get_units(event_name)
         season_year = performances[0][6]
         if performances[0][5] == 11:
             season_year += 1
@@ -203,11 +196,7 @@ class DB:
                     dates.append(self._date_to_2000_dt(year,month,day, season_year))
                 else:
                     if seconds is not None:
-                        sec = int(seconds)
-                        hundreth = int((seconds-sec) * 100)
-                        if min is None:
-                            min = 0
-                        marks.append(self._time_to_dt(min,sec,hundreth))
+                        marks.append(self._time_to_dt(min,seconds))
                     else:
                         marks.append(None)
                     wind2.append(windL2)
@@ -226,7 +215,11 @@ class DB:
     def _tuplist_to_list(self, tuplist):
         return [item for tup in tuplist for item in tup]
 
-    def _time_to_dt(self, min,sec,hundreth):
+    def _time_to_dt(self, min,seconds):
+        if min is None:
+            min = 0
+        sec = int(seconds)
+        hundreth = int((seconds-sec)*100)
         min = ('0' + str(min))[-2:]
         return datetime64(f'2000-01-01T00:{self._2digs(min)}:{self._2digs(sec)}.{hundreth}')
 
@@ -258,6 +251,12 @@ class DB:
                                 ))
         pr = pr.fetchall()
         self._close_connection()
+        units = self._get_units(event_name)
+        pr_min, pr_sec = pr
+        if unit == 'dist' or pr_sec > 100:
+            pr = pr_sec
+        else:
+            pr = self._time_to_dt(pr_min, pr_sec)
         return pr
 #Returns selected athletes best time/distance in first year
     def get_athlete_first_year_pr(self, athlete_id, event_name):
@@ -293,6 +292,7 @@ class DB:
         slowest=slowest.fetchall()
         self._close_connection()
         return slowest
+"""
 #Returns selected athletes overall improvment
     def get_athlete_overall_imp(self):
         self._start_connection()
@@ -312,4 +312,13 @@ class DB:
 
         year1Imp= year1Imp.fetchall()
         self._close_connection()
-        return year1Imp
+        return year1Imp"""
+
+    def _get_units(self, event_name):
+        self._start_connection()
+        self.curr.execute("""SELECT DISTINCT time_or_dist FROM Performances
+                                     WHERE event_name = ?""", (event_name,))
+        units = units.fetchall()
+        units = units[0][0]
+        self._close_connection()
+        return units
