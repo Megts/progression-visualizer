@@ -240,7 +240,7 @@ class DB:
         if min is not None:
             return min + seconds/60
         return None
-#Athlete 1 Personal Record (We need min for sec and Max for meters how do we fix this?)
+#Returns the athletes best time/distance all time
     def get_athlete_pr(self,athlete_id, event_name):
         self._start_connection()
         if self._get_units(event_name) == 'dist':
@@ -257,7 +257,7 @@ class DB:
         pr = pr.fetchall()
         self._close_connection()
         return pr
-
+#Returns selected athletes best time/distance in first year
     def get_athlete_first_year_pr(self, athlete_id, event_name):
         self._start_connection()
         if self._get_units(event_name) == 'dist':
@@ -274,7 +274,7 @@ class DB:
         pr1= pr1.fetchall()
         self._close_connection()
         return pr1
-
+#Returns selected athletes slowest time/distance in first year. (Used for first year imp)
     def get_athlete_first_year_slowest(self, athlete_id, event_name):
         self._start_connection()
         if self._get_units(event_name) == 'dist':
@@ -291,3 +291,23 @@ class DB:
         slowest=slowest.fetchall()
         self._close_connection()
         return slowest
+#Returns selected athletes overall improvment
+    def get_athlete_overall_imp(self):
+        self._start_connection()
+
+        overallImp=
+
+
+        overallImp =overallImp.fetchall()
+        self._close_connection()
+        return overall
+
+#Returns selected athletes improvement in first year
+    def get_athlete_first_year_imp(self):
+        self._start_connection()
+
+        year1Imp=
+
+        year1Imp= year1Imp.fetchall()
+        self._close_connection()
+        return year1Imp

@@ -13,7 +13,7 @@ A1performance = [6.89, 6.70, 6.43]
 A2performance= [6.99, 6.81, 6.70]
 
 #Calling the input data to be plotted
-plt.plot(date_x, A1performance, color='k', linestyle='--', marker= 'o', label='Athlete1')
+plt.plot(date_x, A1performance, color='o', linestyle='--', marker= 'o', label='Athlete1')
 plt.plot(date_x, A2performance, color='k', linestyle='--', marker= '.', label= 'Athlete2')
 
 #Graph labels
