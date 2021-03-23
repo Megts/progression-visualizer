@@ -7,12 +7,12 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from ncaa_db_queries import DB
 import numpy as np
+from numpy import datetime64
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 import matplotlib.dates as mdates
-from matplotlib.ticker import FuncFormatter
-from datetime import datetime
+from matplotlib.ticker import FuncFormatter, AutoMinorLocator
 
 
 db = DB('ncaa.db')
@@ -263,7 +263,7 @@ class AthleteSelection(object):
         self.event_picked = self.event.currentText()
 
 class GraphViewer(object):
-    def setupGraphViewer(self, MainWindow, athlete_id, event_name, season):
+    def setupGraphViewer(self, MainWindow, athlete_ids, event_name, season):
         MainWindow.setGeometry(TOP,LEFT,WIDTH,HEIGHT)
         MainWindow.setWindowTitle("TFRRS Visualizer")
         MainWindow.setStyleSheet("background-color: gray;")
@@ -282,36 +282,45 @@ class GraphViewer(object):
 #Graph Formatting and Inputs
         sc = Canvas(self.centralwidget, width = 650, height = 400)
         sc.move((WIDTH-650)//2,0)
-        ath_name = db.get_ahtlete_name(athlete_id)
-        completed_seasons, units = db.get_athlete_results(athlete_id, event_name, season)
-#        marks, dates, units, wind2, wind4 = db.get_athlete_results(athlete_id, event_name, season)
-        colors =['orange','b','r','g','pink']
-        color_i = 0
-        for year in completed_seasons:
-            marks,wind2,wind4,dates = year
-            sc.axes.plot(dates, marks, color = 'colors[color_i]', marker = 'o', label = np.date_as_str(dates[0], unit = 'Y'))
-            sc.axes.plot(dates, marks, color = 'black', marker ='.')
-        #ath_name2 = db.get_athlete_name(athlete_id)
-        sc.axes.set(xlabel = "Years", ylabel = units, title = f'{ath_name} - {season} {event_name}')
+        colors = ['k','b','r','g','c']
+        lstyes = ['-',':','--','-.']
+        for athlete_id in athlete_ids:
+            ath_name = db.get_ahtlete_name(athlete_id)
+            completed_seasons, units = db.get_athlete_results(athlete_id, event_name, season)
+            counter = 0
+            for year in completed_seasons:
+                marks,wind2,wind4,dates,season_year = year
+                sc.axes.plot(dates, marks, color=colors[counter], linestyle='-', marker='o', label=f'{ath_name} {season_year}')
+                counter += 1
+
+        sc.axes.set(xlabel = "Months", ylabel = units, title = f'{season} {event_name}')
+        sc.axes.legend()
 
         years = mdates.YearLocator()
         months = mdates.MonthLocator()
-        years_fmt = mdates.DateFormatter('%Y')
         time = mdates.AutoDateLocator()
+        months_fmt = mdates.DateFormatter('%b')
         time_fmt = mdates.AutoDateFormatter(time)
 
-        sc.axes.xaxis.set_major_locator(years)
-        sc.axes.xaxis.set_major_formatter(years_fmt)
-        sc.axes.xaxis.set_minor_locator(months)
+        if season == 'XC':
+            datemin = np.datetime64('2000-08-24')
+            datemax = np.datetime64('2000-12-01')
+        if season == 'Indoor':
+            datemin = np.datetime64('1999-12-01')
+            datemax = np.datetime64('2000-03-21')
+        if season == 'Outdoor':
+            datemin = np.datetime64('2000-03-01')
+            datemax = np.datetime64('2000-07-01')
+        sc.axes.set_xlim(datemin,datemax)
+
+        sc.axes.xaxis.set_major_locator(months)
+        sc.axes.xaxis.set_major_formatter(months_fmt)
+        sc.axes.xaxis.set_minor_locator(AutoMinorLocator(4))
 
         if units != 'Meters':
             print('formatting y axis')
             sc.axes.yaxis.set_major_locator(time)
             sc.axes.yaxis.set_major_formatter(time_fmt)
-            sc.axes.format_ydata = mdates.DateFormatter('%M:%S.%f')
-
-        sc.axes.format_xdata = mdates.DateFormatter('%Y-%m-%d')
-        sc.fig.autofmt_xdate()
 
         MainWindow.setCentralWidget(self.centralwidget)
 
@@ -467,13 +476,13 @@ class MainWindow(QMainWindow):
         self.show()
 
     def startGraphViewer(self):
-        self.graphViewer.setupGraphViewer(self, self.athleteSelection.ath_id, self.athleteSelection.event_picked, self.athleteSelection.season_picked)
+        self.graphViewer.setupGraphViewer(self, [self.athleteSelection.ath_id], self.athleteSelection.event_picked, self.athleteSelection.season_picked)
         self.graphViewer.backButton.clicked.connect(self.startAthleteSelection)
 
         self.show()
 
     def startStatViewer(self):
-        self.statViewer.setupStatViewer(self, athlete_id)
+        self.statViewer.setupStatViewer(self, self.athleteSelection.ath_id, self.athleteSelection.event_picked, self.athleteSelection.season_picked)
         self.statViewer.backButton.clicked.connect(self.startAthleteSelection)
         self.show()
 
