@@ -135,73 +135,44 @@ class DB:
         dates = []
         wind2 = []
         wind4 = []
-        if units == 'dist':
-            units = 'Meters'
-            for min, meters, windL2, windL4, day, month, year in performances:
-                if season=='Indoor' and (year>season_year or (year==season_year and month>3)):
+        for min, seconds, windL2, windL4, day, month, year in performances:
+            if season=='XC' and year>season_year and month>3:
+                completed_seasons.append([marks,wind2,wind4,dates,season_year])
+                season_year = year
+                marks = []
+                dates = []
+                wind2 = []
+                wind4 = []
+            elif season=='Indoor' and (year>season_year or (year==season_year and month>3)):
+                completed_seasons.append([marks,wind2,wind4,dates,season_year])
+                season_year = year
+                if month == 11 and season == 'Indoor':
+                    season_year += 1
+                marks = []
+                dates = []
+                wind2 = []
+                wind4 = []
+            else:
+                if year > season_year:
                     completed_seasons.append([marks,wind2,wind4,dates,season_year])
                     season_year = year
-                    if month == 11 and season == 'Indoor':
-                        season_year += 1
                     marks = []
                     dates = []
                     wind2 = []
                     wind4 = []
-                else:
-                    if year > season_year:
-                        completed_seasons.append([marks,wind2,wind4,dates, season_year])
-                        season_year = year
-                        marks = []
-                        dates = []
-                        wind2 = []
-                        wind4 = []
-                marks.append(meters)
-                wind2.append(windL2)
-                wind4.append(windL4)
-                dates.append(self._date_to_2000_dt(year,month,day, season_year))
-        else:
-            units = 'Time'
-            for min, seconds, windL2, windL4, day, month, year in performances:
 
-                if season=='XC' and year>season_year and month>3:
-                    completed_seasons.append([marks,wind2,wind4,dates,season_year])
-                    season_year = year
-                    marks = []
-                    dates = []
-                    wind2 = []
-                    wind4 = []
-                elif season=='Indoor' and (year>season_year or (year==season_year and month>3)):
-                    completed_seasons.append([marks,wind2,wind4,dates,season_year])
-                    season_year = year
-                    if month == 11 and season == 'Indoor':
-                        season_year += 1
-                    marks = []
-                    dates = []
-                    wind2 = []
-                    wind4 = []
-                else:
-                    if year > season_year:
-                        completed_seasons.append([marks,wind2,wind4,dates,season_year])
-                        season_year = year
-                        marks = []
-                        dates = []
-                        wind2 = []
-                        wind4 = []
-
-                if seconds > 100:
-                    units = "Points"
+            if seconds is not None:
+                if units == 'Meters':
                     marks.append(seconds)
-                    wind2.append(windL2)
-                    wind4.append(windL4)
-                    dates.append(self._date_to_2000_dt(year,month,day, season_year))
+                elif units == 'Points':
+                    marks.append(int(seconds))
                 else:
-                    if seconds is not None:
-                        marks.append(self._time_to_dt(min,seconds))
-                    else:
-                        marks.append(None)
-                    wind2.append(windL2)
-                    wind4.append(windL4)
-                    dates.append(self._date_to_2000_dt(year,month,day, season_year))
+                    marks.append(self._time_to_dt(min,seconds))
+            else:
+                marks.append(None)
+            wind2.append(windL2)
+            wind4.append(windL4)
+            dates.append(self._date_to_2000_dt(year,month,day, season_year))
 
         completed_seasons.append([marks,wind2,wind4,dates, season_year])
         return completed_seasons, units
@@ -292,33 +263,41 @@ class DB:
         slowest=slowest.fetchall()
         self._close_connection()
         return slowest
-"""
+#
 #Returns selected athletes overall improvment
-    def get_athlete_overall_imp(self):
-        self._start_connection()
-
-        overallImp=
-
-
-        overallImp =overallImp.fetchall()
-        self._close_connection()
-        return overall
-
+#    def get_athlete_overall_imp(self):
+#        self._start_connection()
+#
+#        overallImp=
+#
+#
+#        overallImp =overallImp.fetchall()
+#        self._close_connection()
+#        return overall
+#
 #Returns selected athletes improvement in first year
-    def get_athlete_first_year_imp(self):
-        self._start_connection()
-
-        year1Imp=
-
-        year1Imp= year1Imp.fetchall()
-        self._close_connection()
-        return year1Imp"""
-
+#    def get_athlete_first_year_imp(self):
+#        self._start_connection()
+#
+#        year1Imp=
+#
+#        year1Imp= year1Imp.fetchall()
+#        self._close_connection()
+#        return year1Imp"""
+#
     def _get_units(self, event_name):
         self._start_connection()
-        self.curr.execute("""SELECT DISTINCT time_or_dist FROM Performances
-                                     WHERE event_name = ?""", (event_name,))
+        units = self.curr.execute("""SELECT sec_or_meters, time_or_dist FROM Performances
+                                     WHERE event_name = ? AND time_or_dist NOT NULL
+                                     LIMIT 1""", (event_name,))
         units = units.fetchall()
-        units = units[0][0]
+        mark, units = units[0]
+        if units == 'time':
+            if mark > 100:
+                units = 'Points'
+            else:
+                units = 'Time'
+        else:
+            units = 'Meters'
         self._close_connection()
         return units
