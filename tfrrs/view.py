@@ -283,16 +283,15 @@ class GraphViewer(object):
 #Graph Formatting and Inputs
         sc = Canvas(self.centralwidget, width = 650, height = 400)
         sc.move((WIDTH-650)//2,0)
-        colors = ['k','b','r','g','c']
+        colors = {2015:'k',2016:'y',2017:'m',2018:'c',2019:'r',2020:'g',2021:'b'}
         lstyes = ['-',':','--','-.']
+        units = None
         for athlete_id in athlete_ids:
             ath_name = db.get_ahtlete_name(athlete_id)
             completed_seasons, units = db.get_athlete_results(athlete_id, event_name, season)
-            counter = 0
             for year in completed_seasons:
                 marks,wind2,wind4,dates,season_year = year
-                sc.axes.plot(dates, marks, color=colors[counter], linestyle='-', marker='o', label=f'{ath_name} {season_year}')
-                counter += 1
+                sc.axes.plot(dates, marks, color=colors[season_year], linestyle='-', marker='o', label=f'{ath_name} {season_year}')
 
         sc.axes.set(xlabel = "Months", ylabel = units, title = f'{season} {event_name}')
         sc.axes.legend()
@@ -301,7 +300,7 @@ class GraphViewer(object):
         months = mdates.MonthLocator()
         time = mdates.AutoDateLocator()
         months_fmt = mdates.DateFormatter('%b')
-        time_fmt = mdates.AutoDateFormatter(time)
+        time_fmt = FuncFormatter(self.time_to_4digs)
 
         if season == 'XC':
             datemin = np.datetime64('2000-08-24')
@@ -318,13 +317,20 @@ class GraphViewer(object):
         sc.axes.xaxis.set_major_formatter(months_fmt)
         sc.axes.xaxis.set_minor_locator(AutoMinorLocator(4))
 
-        if units != 'Meters':
+        if units == 'Time':
             print('formatting y axis')
             sc.axes.yaxis.set_major_locator(time)
             sc.axes.yaxis.set_major_formatter(time_fmt)
 
         MainWindow.setCentralWidget(self.centralwidget)
 
+    def time_to_4digs(self, time, pos = None):
+        timestr = mdates.num2date(time).strftime('%M:%S.%f')
+        while timestr[0] in ['0',':']:
+            timestr = timestr[1:]
+        if ':' in timestr:
+            return timestr.split('.')[0]
+        return timestr[:5]
 
 class Canvas(FigureCanvas):
     def __init__(self,parent=None, width = 400, height= 400, dpi=100):
