@@ -45,6 +45,7 @@ class StartWindow(object):
         self.continueButton.setStyleSheet("background-color: orange;")
 
         MainWindow.setCentralWidget(self.centralwidget)
+        
 
 class CollegeSelection(object):
 #Window set up for window that user selects Division, Gender, and College

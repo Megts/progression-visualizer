@@ -314,10 +314,11 @@ class DB:
         self._close_connection()
         return year1Imp"""
 
-    def _get_units(self, event_name):
+def _get_units(self, event_name):
         self._start_connection()
         self.curr.execute("""SELECT DISTINCT time_or_dist FROM Performances
-                                     WHERE event_name = ?""", (event_name,))
+                                WHERE event_name = ?""", (event_name
+                                ))
         units = units.fetchall()
         units = units[0][0]
         self._close_connection()
