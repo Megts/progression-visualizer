@@ -24,9 +24,8 @@ class AthleteItem(scrapy.Item):
 class PerformanceItem(scrapy.Item):
     athlete_id = scrapy.Field()
     event_name = scrapy.Field()
-    min = scrapy.Field()
-    sec_or_meters = scrapy.Field()
-    time_or_dist = scrapy.Field()
+    mark = scrapy.Field()
+    units = scrapy.Field()
     wind_legal2 = scrapy.Field()
     wind_legal4 = scrapy.Field()
     day = scrapy.Field()

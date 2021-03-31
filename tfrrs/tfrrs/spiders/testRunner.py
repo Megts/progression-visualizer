@@ -103,13 +103,12 @@ class TFRRSspider(scrapy.Spider):
                 mark = line[0]
                 date = line[-1]
                 day, month, year = self.date_to_tup(date)
-                min, sec_or_meters, time_or_dist, wind_legal2, wind_legal4 = self.parse_mark(mark)
+                mark, units, wind_legal2, wind_legal4 = self.parse_mark(mark)
                 if sec_or_meters is not None:
                     perf['athlete_id'] = athlete_id
                     perf['event_name'] = event_name
-                    perf['min'] = min
-                    perf['sec_or_meters'] = sec_or_meters
-                    perf['time_or_dist'] = time_or_dist
+                    perf['mark'] = mark
+                    perf['units'] = units
                     perf['wind_legal2'] = wind_legal2
                     perf['wind_legal4'] = wind_legal4
                     perf['day'] = day
@@ -132,28 +131,27 @@ class TFRRSspider(scrapy.Spider):
 
 
     def parse_mark(self, mark):
-        min = None
-        time_or_dist = 'time'
         wind_legal2 = 1
         wind_legal4 = 1
-        if ':' in mark:
-            min, sec_or_meters = mark.split(':')
-            min = int(min)
-        else:
-            sec_or_meters = mark
+
         if mark in ['ND', 'NT', 'NH', 'DNF', 'FOUL', 'DNS', 'DQ']:
             return [None for i in range(5)]
         if 'm' in sec_or_meters:
-            time_or_dist = 'dist'
-            sec_or_meters = sec_or_meters.replace('m', '')
-        if 'W' in sec_or_meters:
+            time_or_dist = 'Meters'
+            mark = mark.replace('m', '')
+        elif ':' in mark:
+            units = 'Time'
+        elif int(mark) > 60:
+            units = 'Points'
+
+        if 'W' in mark:
             sec_or_meters = sec_or_meters.replace('W','')
             wind_legal2 = 0
             wind_legal4 = 0
-        elif 'w' in sec_or_meters:
+        elif 'w' in mark:
             sec_or_meters = sec_or_meters.replace('w', '')
             wind_legal2 = 0
-        return min, float(sec_or_meters), time_or_dist, wind_legal2, wind_legal4
+        return mark, units wind_legal2, wind_legal4
 
 
     def log_error(self, error):

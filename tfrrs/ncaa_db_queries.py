@@ -177,12 +177,6 @@ class DB:
         completed_seasons.append([marks,wind2,wind4,dates, season_year])
         return completed_seasons, units
 
-    def _get_units(self, event_name):
-        self._start_connection()
-        unit = self.curr.execute("""SELECT time_or_dist FROM Performances
-                                    WHERE event_name = ?""", (event_name,)).fetchall()
-        return unit[0][0]
-
     def _tuplist_to_list(self, tuplist):
         return [item for tup in tuplist for item in tup]
 
@@ -202,89 +196,94 @@ class DB:
     def _2digs(self, num):
         return ('0' + str(num))[-2:]
 
-    def to_minutes(self,min,seconds):
-        if min is not None:
-            return min + seconds/60
-        return None
 #Returns the athletes best time/distance all time
-    def get_athlete_pr(self,athlete_id, event_name):
-        self._start_connection()
-        if self._get_units(event_name) == 'dist':
-            order = 'DESC'
-        else:
-            order = 'ASC'
-        pr = self.curr.execute("""SELECT min, sec_or_meters
-                                    FROM Performances
-                                    WHERE athlete_id = ? AND event_name = ?
-                                    ORDER BY min, sec_or_meters ?
-                                    Limit 1""",(
-                                    athlete_id, event_name, order
-                                ))
-        pr = pr.fetchall()
-        self._close_connection()
+    def get_athlete_pr(self,athlete_id, event_name, season):
         units = self._get_units(event_name)
-        pr_min, pr_sec = pr
-        if unit == 'dist' or pr_sec > 100:
-            pr = pr_sec
+        if units != 'Time':
+            order = """DESC"""
         else:
-            pr = self._time_to_dt(pr_min, pr_sec)
-        return pr
+            order = """ASC"""
+        self._start_connection()
+        pr = self.curr.execute(f"""SELECT min, sec_or_meters
+                                FROM Performances
+                                WHERE athlete_id = '{athlete_id}' AND event_name = '{event_name}' AND season = '{season}'
+                                ORDER BY min, sec_or_meters {order}
+                                Limit 1""")
+        pr = pr.fetchall()[0]
+        min, sec = pr
+        if units == 'Time':
+            pr_mark = self._time_to_dt(min,sec) - datetime64('2000-01-01T00:00:00.00')
+        else:
+            pr_mark = sec
+        self._close_connection()
+        return pr_mark
 #Returns selected athletes best time/distance in first year
-    def get_athlete_first_year_pr(self, athlete_id, event_name):
-        self._start_connection()
-        if self._get_units(event_name) == 'dist':
+    def get_athlete_first_year_pr(self, athlete_id, event_name, season):
+        units = self._get_units(event_name)
+        if units != 'Time':
             order = 'DESC'
         else:
             order = 'ASC'
-        pr1= self.curr.execute("""SELECT min, sec_or_meters, year
+        self._start_connection()
+        pr1= self.curr.execute(f"""SELECT min, sec_or_meters
                                     FROM Performances
-                                    WHERE athlete_id= ? AND event_name = ?
-                                    ORDER BY year asc, min, sec_or_meters ?
-                                    LIMIT 1""",(
-                                    athlete_id, event_name, order
-                                    ))
-        pr1= pr1.fetchall()
+                                    WHERE athlete_id = '{athlete_id}' AND event_name = '{event_name}' AND season = '{season}'
+                                    ORDER BY year, min, sec_or_meters {order}
+                                    LIMIT 1""")
+        pr1= pr1.fetchall()[0]
+        min, sec = pr1
+        if units == 'Time':
+            pr_mark = self._time_to_dt(min,sec) - datetime64('2000-01-01T00:00:00.00')
+        else:
+            pr_mark = sec
+
         self._close_connection()
-        return pr1
-#Returns selected athletes slowest time/distance in first year. (Used for first year imp)
-    def get_athlete_first_year_slowest(self, athlete_id, event_name):
-        self._start_connection()
-        if self._get_units(event_name) == 'dist':
+        return pr_mark
+#Returns selected athletes first performance time/distance in first year. (Used for first year imp)
+    def get_athlete_first_performance(self, athlete_id, event_name, season):
+        units = self._get_units(event_name)
+        if units != 'Time':
             order = 'ASC'
         else:
             order = 'DESC'
-        slowest = self.curr.execute("""SELECT min, sec_or_meters
+        self._start_connection()
+        first = self.curr.execute("""SELECT min, sec_or_meters
                                         FROM Performances
-                                        WHERE athlete_id = ? AND event_name = ?
-                                        ORDER BY year asc, min, sec_or_meters ?
+                                        WHERE athlete_id = ? AND event_name = ? AND season = ?
+                                        ORDER BY year asc, month asc, day
                                         LIMIT 1""",(
-                                        athlete_id, event_name, order
+                                        athlete_id, event_name, season
                                         ))
-        slowest=slowest.fetchall()
+        first=first.fetchall()[0]
+        min, sec = first
+        if units == 'Time':
+            first_mark = self._time_to_dt(min,sec) - datetime64('2000-01-01T00:00:00.00')
+        elif units == 'Points':
+            first_mark = int(sec)
+        else:
+            first_mark = sec
+
         self._close_connection()
-        return slowest
-#
+        return first_mark
+
 #Returns selected athletes overall improvment
-#    def get_athlete_overall_imp(self):
-#        self._start_connection()
-#
-#        overallImp=
-#
-#
-#        overallImp =overallImp.fetchall()
-#        self._close_connection()
-#        return overall
-#
+    def get_athlete_overall_imp(self, athlete_id, event_name,season):
+        first_year = self.get_athlete_first_year_pr(athlete_id, event_name, season)
+        pr = self.get_athlete_pr(athlete_id, event_name, season)
+        improvement = abs(first_year - pr)
+        if  isinstance(improvement,float):
+            return round(improvement,2)
+        return improvement
+
 #Returns selected athletes improvement in first year
-#    def get_athlete_first_year_imp(self):
-#        self._start_connection()
-#
-#        year1Imp=
-#
-#        year1Imp= year1Imp.fetchall()
-#        self._close_connection()
-#        return year1Imp"""
-#
+    def get_athlete_first_year_imp(self, athlete_id, event_name, season):
+        first_perf = self.get_athlete_first_performance(athlete_id, event_name, season)
+        first_pr = self.get_athlete_first_year_pr(athlete_id, event_name, season)
+        improvement = abs(first_perf - first_pr)
+        if  isinstance(improvement,float):
+            return round(improvement,2)
+        return improvement
+
     def _get_units(self, event_name):
         self._start_connection()
         units = self.curr.execute("""SELECT sec_or_meters, time_or_dist FROM Performances

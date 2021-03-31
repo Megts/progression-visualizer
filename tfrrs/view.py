@@ -45,7 +45,7 @@ class StartWindow(object):
         self.continueButton.setStyleSheet("background-color: orange;")
 
         MainWindow.setCentralWidget(self.centralwidget)
-        
+
 
 class CollegeSelection(object):
 #Window set up for window that user selects Division, Gender, and College
@@ -318,7 +318,6 @@ class GraphViewer(object):
         sc.axes.xaxis.set_minor_locator(AutoMinorLocator(4))
 
         if units == 'Time':
-            print('formatting y axis')
             sc.axes.yaxis.set_major_locator(time)
             sc.axes.yaxis.set_major_formatter(time_fmt)
 
@@ -341,7 +340,7 @@ class Canvas(FigureCanvas):
         self.setParent(parent)
 
 class StatViewer(object):
-    def setupStatViewer(self, MainWindow, athlete_id):
+    def setupStatViewer(self, MainWindow, athlete_id, event_name, season):
         MainWindow.setGeometry(TOP,LEFT,WIDTH,HEIGHT)
         MainWindow.setWindowTitle("TFRRS Visualizer")
         MainWindow.setStyleSheet("background-color: gray;")
@@ -362,7 +361,7 @@ class StatViewer(object):
         self.ath1.setFont(QFont("Arial", 15))
 
         self.ath1PR = QLabel(self.centralwidget)
-        test = db.get_athlete_pr(self, athlete_id, event_name)
+        test = db.get_athlete_pr(self, athlete_id, event_name, season)
         self.ath1PR.setText(test)
         self.ath1PR.setGeometry(75,150,150,25)
         self.ath1PR.setAlignment(Qt.AlignCenter)
