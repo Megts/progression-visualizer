@@ -48,14 +48,15 @@ class StartWindow(object):
 
 
 class CollegeSelection(object):
-    def setupCollegeSelection(self, MainWindow, college_id):
-        self.college_id = college_id
+    def setupCollegeSelection(self, MainWindow):
+        print('setting up new window')
         wpadding= 50
         hpadding= 25
         hboxpadding= 25
         labelw=150
         labelh=25
         MainWindow.setGeometry(TOP,LEFT,WIDTH,HEIGHT)
+        MainWindow.setFixedSize(WIDTH, HEIGHT)
         MainWindow.setWindowTitle("TFRRS Visualizer")
         MainWindow.setStyleSheet("background-color: gray;")
         self.centralwidget = QWidget(MainWindow)
@@ -116,7 +117,7 @@ class CollegeSelection(object):
         self.collegeLabel.setAlignment(Qt.AlignCenter)
         self.collegeLabel.setStyleSheet('QLabel {color: Orange}')
         self.collegeLabel.setFont(QFont('Arial', 15))'''
-       
+
 #Athlete Selector
         self.athlete=QComboBox(self.centralwidget)
         self.athlete.setGeometry(350,220,175,40)
@@ -163,6 +164,8 @@ class CollegeSelection(object):
         self.eventLabel.setAlignment(Qt.AlignCenter)
         self.eventLabel.setStyleSheet('QLabel {color: Orange}')
         self.eventLabel.setFont(QFont("Arial", 15))'''
+
+        MainWindow.setCentralWidget(self.centralwidget)
 
 
     def divisionchange(self,i):
@@ -211,7 +214,7 @@ class CollegeSelection(object):
 
 '''class AthleteSelection(object):
     def setupAthleteSelection(self, MainWindow, college_id):
-        
+
         MainWindow.setGeometry(TOP,LEFT,WIDTH,HEIGHT)
         MainWindow.setWindowTitle("TFRRS Visualizer")
         MainWindow.setStyleSheet("background-color: gray;")
@@ -477,18 +480,19 @@ class MainWindow(QMainWindow):
 
 
     def startCollegeSelection(self):
-        self.collegeSelection.setupCollegeSelection(self,self.college_id)
+        self.collegeSelection.setupCollegeSelection(self)
         #self.collegeSelection.nextButton.clicked.connect(self.startAthleteSelection)
         self.collegeSelection.gender.activated.connect(self.collegeSelection.genderchange)
         self.collegeSelection.division.activated.connect(self.collegeSelection.divisionchange)
         self.collegeSelection.college.activated.connect(self.collegeSelection.collegechange)
-        self.collegeSelection.updateButton.clicked.connect(self.startGraphViewer)
-        self.collegeSelection.season.activated.connect(self.athleteSelection.seasonChange)
-        self.collegeSelection.event.activated.connect(self.athleteSelection.eventChange)
-        self.collegeSelection.athlete.activated.connect(self.athleteSelection.athleteChange)
-        self.collegeSelection.statButton.clicked.connect(self.startStatViewer)
+        #self.collegeSelection.updateButton.clicked.connect(self.startGraphViewer)
+        self.collegeSelection.season.activated.connect(self.collegeSelection.seasonChange)
+        self.collegeSelection.event.activated.connect(self.collegeSelection.eventChange)
+        self.collegeSelection.athlete.activated.connect(self.collegeSelection.athleteChange)
+        #self.collegeSelection.statButton.clicked.connect(self.startStatViewer)
 
         self.show()
+        print('Showing college selection')
 
 
 
