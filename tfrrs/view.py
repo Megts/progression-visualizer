@@ -48,6 +48,17 @@ class StartWindow(object):
 
 
 class CollegeSelection(object):
+
+    def __init__(self):
+        self.div_i = 0
+        self.gen_lst = ['m','f']
+        self.gen_i = 0
+        self.gen = self.gen_lst[self.gen_i]
+        self.college_i = 0
+        self.athlete_i = 0
+        self.season_i = 0
+        self.event_i = 0
+
     def setupCollegeSelection(self, MainWindow):
         print('setting up new window')
         wpadding= 50
@@ -70,10 +81,11 @@ class CollegeSelection(object):
         #self.division.setFont(QFont("Arial", 20))
         #self.division.setStyleSheet("text-color: blue;")
         self.division.setEditable(True)
+        self.division.setCurrentIndex(self.div_i)
         self.line_edit = self.division.lineEdit()
         self.line_edit.setAlignment(Qt.AlignCenter)
         self.line_edit.setReadOnly(True)
-        self.div = 1
+        self.div = self.div_i +1
 
         self.divisionLabel= QLabel(self.centralwidget)
         self.divisionLabel.setText('Division')
@@ -90,10 +102,10 @@ class CollegeSelection(object):
         #self.gender.setStyleSheet("background-color: orange;")
        # self.gender.setFont(QFont("Arial", 20))
         self.gender.setEditable(True)
+        self.gender.setCurrentIndex(self.gen_i)
         self.line_edit = self.gender.lineEdit()
         self.line_edit.setAlignment(Qt.AlignCenter)
         self.line_edit.setReadOnly(True)
-        self.gen = 'm'
 
         self.genderLabel= QLabel(self.centralwidget)
         self.genderLabel.setText('Gender')
@@ -108,9 +120,10 @@ class CollegeSelection(object):
         self.name_id = db.get_div_teams(self.div, self.gen)
         team_names = [name for name, id in self.name_id]
         self.college.addItems(team_names)
-        self.college_id = self.name_id[0][1]
+        self.college_id = self.name_id[self.college_i][1]
         #self.college.setStyleSheet("background-color: orange;")
         self.college.setEditable(True)
+        self.college.setCurrentIndex(self.college_i)
         self.line_edit = self.college.lineEdit()
         self.line_edit.setAlignment(Qt.AlignCenter)
         self.line_edit.setReadOnly(True)
@@ -127,10 +140,11 @@ class CollegeSelection(object):
         self.athlete.setGeometry(350,220,175,40)
         self.athletes = db.get_init_team_roster(self.college_id)
         athlete_names = [name for name, id in self.athletes]
-        self.ath_id = self.athletes[0][1]
+        self.ath_id = self.athletes[self.athlete_i][1]
         self.athlete.addItems(athlete_names)
         #self.athlete.setStyleSheet("background-color: orange;")
         self.athlete.setEditable(True)
+        self.athlete.setCurrentIndex(self.athlete_i)
         self.line_edit = self.athlete.lineEdit()
         self.line_edit.setAlignment(Qt.AlignCenter)
         self.line_edit.setReadOnly(True)
@@ -149,6 +163,7 @@ class CollegeSelection(object):
         seasons = db.get_athlete_seasons(self.ath_id)
         self.season.addItems(seasons)
         #self.season.setStyleSheet("background-color: orange;")
+        self.season.setCurrentIndex(self.season_i)
         self.season_picked = self.season.currentText()
         self.season.setEditable(True)
         self.line_edit = self.season.lineEdit()
@@ -167,6 +182,7 @@ class CollegeSelection(object):
         self.event.setGeometry(350,350,175,40)
         events = db.get_athlete_season_events(self.ath_id, self.season_picked)
         self.event.addItems(events)
+        self.event.setCurrentIndex(self.event_i)
         self.event_picked = self.event.currentText()
         #self.event.setStyleSheet("background-color: orange;")
         self.event.setEditable(True)
@@ -203,48 +219,78 @@ class CollegeSelection(object):
 
 
     def divisionchange(self,i):
-        self.college.clear()
-        self.div = i + 1
-        self.name_id = db.get_div_teams(self.div, self.gen)
-        team_names = [name for name, id in self.name_id]
-        self.college.clear()
-        self.college.addItems(team_names)
-        self.division.setCurrentIndex(i)
+        if i != -1:
+            self.div_i = i
+            self.college.clear()
+            self.div = self.div_i + 1
+            self.update_colleges()
 
     def genderchange(self, i):
-        self.college.clear()
-        if i == 0:
-            self.gen = 'm'
-        else:
-            self.gen = 'f'
-        self.name_id = db.get_div_teams(self.div, self.gen)
-        team_names = [name for name, id in self.name_id]
-        self.college.clear()
-        self.college.addItems(team_names)
-        self.gender.setCurrentIndex(i)
+        if i != -1:
+            self.gen_i = i
+            self.gen = self.gen_lst[self.gen_i]
+            self.update_colleges()
 
     def collegechange(self,i):
-        self.college_id = self.name_id[i][1]
-
-    def seasonChange(self,i):
-        self.season_picked = self.season.itemText(i)
-        events = db.get_athlete_season_events(self.ath_id, self.season_picked)
-        self.event.clear()
-        self.event.addItems(events)
-
-    def eventChange(self, i):
-        self.event_picked = self.event.itemText(i)
+        if i != -1:
+            self.college_i = i
+            self.college_id = self.name_id[self.college_i][1]
+            self.update_athletes()
 
     def athleteChange(self,i):
-        self.ath_id = self.athletes[i][1]
+        if i != -1:
+            self.athlete_i = i
+            self.ath_id = self.athletes[self.athlete_i][1]
+            self.update_seasons()
+
+
+    def seasonChange(self,i):
+        if i != -1:
+            self.season_i = i
+            self.season_picked = self.season.itemText(self.season_i)
+            self.update_events()
+
+    def eventChange(self, i):
+        if i != -1:
+            self.event_i = i
+            self.event_picked = self.event.itemText(self.event_i)
+
+    def update_colleges(self):
+        self.name_id = db.get_div_teams(self.div, self.gen)
+        team_names = [name for name, id in self.name_id]
+        self.college_i = 0
+        self.college_id = self.name_id[self.college_i][1]
+        self.college.clear()
+        self.college.addItems(team_names)
+        self.update_athletes()
+
+    def update_athletes(self):
+        print(self.college_id)
+        self.athletes = db.get_init_team_roster(self.college_id)
+        athlete_names = [name for name, id in self.athletes]
+        self.athlete_i = 0
+        self.ath_id = self.athletes[self.athlete_i][1]
+        self.athlete.clear()
+        self.athlete.addItems(athlete_names)
+        self.update_seasons()
+
+    def update_seasons(self):
+        self.season_i = 0
         seasons = db.get_athlete_seasons(self.ath_id)
         self.season.clear()
         self.season.addItems(seasons)
         self.season_picked = self.season.currentText()
+        self.update_events()
+
+    def update_events(self):
         events = db.get_athlete_season_events(self.ath_id, self.season_picked)
         self.event.clear()
         self.event.addItems(events)
+        self.event_i = 0
         self.event_picked = self.event.currentText()
+
+
+
 
 '''class AthleteSelection(object):
     def setupAthleteSelection(self, MainWindow, college_id):
@@ -504,13 +550,13 @@ class MainWindow(QMainWindow):
     def startCollegeSelection(self):
         self.collegeSelection.setupCollegeSelection(self)
         #self.collegeSelection.nextButton.clicked.connect(self.startAthleteSelection)
-        self.collegeSelection.gender.activated.connect(self.collegeSelection.genderchange)
-        self.collegeSelection.division.activated.connect(self.collegeSelection.divisionchange)
-        self.collegeSelection.college.activated.connect(self.collegeSelection.collegechange)
+        self.collegeSelection.gender.currentIndexChanged.connect(self.collegeSelection.genderchange)
+        self.collegeSelection.division.currentIndexChanged.connect(self.collegeSelection.divisionchange)
+        self.collegeSelection.college.currentIndexChanged.connect(self.collegeSelection.collegechange)
         self.collegeSelection.updateButton.clicked.connect(self.startGraphViewer)
-        self.collegeSelection.season.activated.connect(self.collegeSelection.seasonChange)
-        self.collegeSelection.event.activated.connect(self.collegeSelection.eventChange)
-        self.collegeSelection.athlete.activated.connect(self.collegeSelection.athleteChange)
+        self.collegeSelection.season.currentIndexChanged.connect(self.collegeSelection.seasonChange)
+        self.collegeSelection.event.currentIndexChanged.connect(self.collegeSelection.eventChange)
+        self.collegeSelection.athlete.currentIndexChanged.connect(self.collegeSelection.athleteChange)
         self.collegeSelection.statButton.clicked.connect(self.startStatViewer)
 
         self.show()
