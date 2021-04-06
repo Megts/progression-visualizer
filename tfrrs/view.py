@@ -20,6 +20,12 @@ TOP = 400
 LEFT = 150
 WIDTH = 700
 HEIGHT = 500
+# Handle high resolution displays:
+if hasattr(Qt, 'AA_EnableHighDpiScaling'):
+    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
+if hasattr(Qt, 'AA_UseHighDpiPixmaps'):
+    QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
+
 
 class StartWindow(object):
     def setupStartWindow(self, MainWindow):
@@ -567,7 +573,6 @@ class MainWindow(QMainWindow):
         self.startWindow.setupStartWindow(self)
         self.startWindow.continueButton.clicked.connect(self.startCollegeSelection)
         self.show()
-
 
     def startCollegeSelection(self):
         self.collegeSelection.setupCollegeSelection(self)
