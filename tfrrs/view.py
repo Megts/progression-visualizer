@@ -210,7 +210,7 @@ class CollegeSelection(object):
 #Update Button
         self.updateButton= QPushButton(self.centralwidget)
         self.updateButton.setText("Plot Selected Event")
-        self.updateButton.setGeometry(50,425,275,40)
+        self.updateButton.setGeometry(25,425,200,40)
         self.updateButton.setStyleSheet("background-color: Blue;  color: White; font-size: 20px")
         self.updateButton.setFont(QFont("Arial"))
         #self.updateButton.setBackground(
@@ -221,13 +221,21 @@ class CollegeSelection(object):
 #Button to go to statViewer window
         self.statButton=QPushButton(self.centralwidget)
         self.statButton.setText("View Athlete Stats")
-        self.statButton.setGeometry(375,425,275,40)
+        self.statButton.setGeometry(250,425,200,40)
         self.statButton.setStyleSheet("background-color: Blue;  color: White; font-size: 20px")
         self.statButton.setFont(QFont("Arial"))
 
         MainWindow.setCentralWidget(self.centralwidget)
 
+#Update Roster
+        self.updateRoster= QPushButton(self.centralwidget)
+        self.updateRoster.setText("Update Roster")
+        self.updateRoster.setGeometry(475,425,200,40)
+        self.updateRoster.setStyleSheet("background-color: Blue;  color: White; font-size: 20px")
+        self.updateRoster.setFont(QFont("Arial"))
 
+        MainWindow.setCentralWidget(self.centralwidget)
+        
     def divisionchange(self,i):
         if i != -1:
             self.div_i = i
