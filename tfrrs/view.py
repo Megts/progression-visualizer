@@ -33,7 +33,7 @@ class StartWindow(object):
         MainWindow.setGeometry(TOP,LEFT,WIDTH,HEIGHT)
         MainWindow.setFixedSize(700,500)
         MainWindow.setWindowTitle("TFRRS Visualizer")
-        MainWindow.setStyleSheet("background-color: Light gray;")
+        MainWindow.setStyleSheet("background-color: Light gray")
         self.centralwidget = QWidget(MainWindow)
 
 #Text description
@@ -43,7 +43,7 @@ class StartWindow(object):
         self.descriptionLabel.setFont(QFont("Arial"))
         self.descriptionLabel.setAlignment(Qt.AlignCenter)
         self.descriptionLabel.setGeometry(5,10,690,400)
-        self.descriptionLabel.setStyleSheet('color: Blue; font-size: 30px}')
+        self.descriptionLabel.setStyleSheet('color: Blue; font-size: 30px')
 
 #Button to continue to next window
         self.continueButton = QPushButton("Click here to continue", self.centralwidget)
@@ -456,7 +456,7 @@ class StatViewer(object):
         if isinstance(pr, timedelta64):
             pr = db.format_timedelta(pr)
         self.ath1PR = QLabel(self.centralwidget)
-        self.ath1PR.setText(pr)
+        self.ath1PR.setText(str(pr))
         self.ath1PR.setGeometry(375,150,100,25)
         self.ath1PR.setAlignment(Qt.AlignCenter)
         self.ath1PR.setFont(QFont("Arial"))
@@ -466,7 +466,7 @@ class StatViewer(object):
         if isinstance(pr1, timedelta64):
             pr1 = db.format_timedelta(pr1)
         self.ath1PR1 = QLabel(self.centralwidget)
-        self.ath1PR1.setText(pr1)
+        self.ath1PR1.setText(str(pr1))
         self.ath1PR1.setGeometry(375,225,100,25)
         self.ath1PR1.setAlignment(Qt.AlignCenter)
         self.ath1PR1.setFont(QFont("Arial"))
@@ -476,7 +476,7 @@ class StatViewer(object):
         if isinstance(imp, timedelta64):
             imp = db.format_timedelta(imp)
         self.ath1Imp = QLabel(self.centralwidget)
-        self.ath1Imp.setText(imp)
+        self.ath1Imp.setText(str(imp))
         self.ath1Imp.setGeometry(375,300,100,25)
         self.ath1Imp.setAlignment(Qt.AlignCenter)
         self.ath1Imp.setFont(QFont("Arial"))
@@ -486,7 +486,7 @@ class StatViewer(object):
         if isinstance(imp1, timedelta64):
             imp1 = db.format_timedelta(imp1)
         self.ath1Imp1 = QLabel(self.centralwidget)
-        self.ath1Imp1.setText(imp1)
+        self.ath1Imp1.setText(str(imp1))
         self.ath1Imp1.setGeometry(375,375,100,25)
         self.ath1Imp1.setAlignment(Qt.AlignCenter)
         self.ath1Imp1.setFont(QFont("Arial"))
