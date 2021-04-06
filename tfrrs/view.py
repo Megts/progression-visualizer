@@ -7,7 +7,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from ncaa_db_queries import DB
 import numpy as np
-from numpy import datetime64
+from numpy import datetime64, timedelta64
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
@@ -453,7 +453,7 @@ class StatViewer(object):
         self.ath1.setFont(QFont("Arial", 20))
         self.ath1.setAlignment(Qt.AlignCenter)
 
-        pr = db.get_athlete_pr(self, athlete_id, event_name, season)
+        pr = db.get_athlete_pr(athlete_id, event_name, season)
         if isinstance(pr, timedelta64):
             pr = db.format_timedelta(pr)
         self.ath1PR = QLabel(self.centralwidget)
@@ -461,27 +461,27 @@ class StatViewer(object):
         self.ath1PR.setGeometry(75,150,150,25)
         self.ath1PR.setAlignment(Qt.AlignCenter)
 
-        pr1 = db.get_athlete_first_year_pr(self, athlete_id, event_name, season)
+        pr1 = db.get_athlete_first_year_pr(athlete_id, event_name, season)
         if isinstance(pr1, timedelta64):
             pr1 = db.format_timedelta(pr1)
         self.ath1PR1 = QLabel(self.centralwidget)
-        self.ath1PR1.setText("3.56")
+        self.ath1PR1.setText(pr1)
         self.ath1PR1.setGeometry(75,200,150,25)
         self.ath1PR1.setAlignment(Qt.AlignCenter)
 
-        imp = db.get_athlete_overall_imp(self, athlete_id, event_name, season)
+        imp = db.get_athlete_overall_imp(athlete_id, event_name, season)
         if isinstance(imp, timedelta64):
-            pr = db.format_timedelta(imp)
+            imp = db.format_timedelta(imp)
         self.ath1Imp = QLabel(self.centralwidget)
-        self.ath1Imp.setText("3.56")
+        self.ath1Imp.setText(imp)
         self.ath1Imp.setGeometry(75,250,150,25)
         self.ath1Imp.setAlignment(Qt.AlignCenter)
 
-        imp1 = db.get_athlete_first_year_imp(self, athlete_id, event_name, season)
+        imp1 = db.get_athlete_first_year_imp(athlete_id, event_name, season)
         if isinstance(imp1, timedelta64):
             imp1 = db.format_timedelta(imp1)
         self.ath1Imp1 = QLabel(self.centralwidget)
-        self.ath1Imp1.setText("3.56")
+        self.ath1Imp1.setText(imp1)
         self.ath1Imp1.setGeometry(75,300,150,25)
         self.ath1Imp1.setAlignment(Qt.AlignCenter)
 
@@ -598,7 +598,7 @@ class MainWindow(QMainWindow):
         self.show()
 
     def startStatViewer(self):
-        self.statViewer.setupStatViewer(self, [self.collegeSelection.ath_id], self.collegeSelection.event_picked, self.collegeSelection.season_picked)
+        self.statViewer.setupStatViewer(self, self.collegeSelection.ath_id, self.collegeSelection.event_picked, self.collegeSelection.season_picked)
         self.statViewer.backButton.clicked.connect(self.startCollegeSelection)
         self.show()
 

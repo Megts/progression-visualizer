@@ -194,9 +194,9 @@ class DB:
         return dt - td
 
     def format_timedelta(self, td):
-        hours = int(td.astype("timedelta64[h]") / td(1,'h'))
-        minutes = int(td.astype("timedelta64[m]") / td(1,'m')) % 60
-        seconds = td.astype("timedelta64[ms]") / td(1,'s') % 60
+        hours = int(td.astype("timedelta64[h]") / timedelta64(1,'h'))
+        minutes = int(td.astype("timedelta64[m]") / timedelta64(1,'m')) % 60
+        seconds = td.astype("timedelta64[ms]") / timedelta64(1,'s') % 60
         if minutes > 0:
             sec, milli = str(seconds).split('.')
             sec = self._2digs(int(sec))
@@ -204,7 +204,7 @@ class DB:
                 minutes = self._2digs(minutes)
                 return f'{hours}:{minutes}:{sec}.{milli}'
             return f'{minutes}:{sec}.{milli}'
-        return f'{seconds}.{milli}'
+        return str(seconds)
 
     def _2digs(self, num):
         return ('0' + str(num))[-2:]
