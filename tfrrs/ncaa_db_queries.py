@@ -177,6 +177,12 @@ class DB:
         completed_seasons.append([marks,wind2,wind4,dates, season_year])
         return completed_seasons, units
 
+    def _get_units(self, event_name):
+        self._start_connection()
+        unit = self.curr.execute("""SELECT time_or_dist FROM Performances
+                                    WHERE event_name = ?""", (event_name,)).fetchall()
+        return unit[0][0]
+
     def _tuplist_to_list(self, tuplist):
         return [item for tup in tuplist for item in tup]
 
