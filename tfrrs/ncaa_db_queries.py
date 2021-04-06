@@ -263,10 +263,6 @@ class DB:
 #Returns selected athletes first performance time/distance in first year. (Used for first year imp)
     def get_athlete_first_performance(self, athlete_id, event_name, season):
         units = self._get_units(event_name)
-        if units != 'Time':
-            order = 'ASC'
-        else:
-            order = 'DESC'
         self._start_connection()
         first = self.curr.execute("""SELECT min, sec_or_meters
                                         FROM Performances
@@ -283,7 +279,6 @@ class DB:
             first_mark = int(sec)
         else:
             first_mark = sec
-
         self._close_connection()
         return first_mark
 
