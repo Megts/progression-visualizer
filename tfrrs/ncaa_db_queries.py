@@ -219,7 +219,8 @@ class DB:
         self._start_connection()
         pr = self.curr.execute(f"""SELECT min, sec_or_meters
                                 FROM Performances
-                                WHERE athlete_id = '{athlete_id}' AND event_name = '{event_name}' AND season = '{season}'
+                                WHERE athlete_id = '{athlete_id}' AND event_name = '{event_name}'
+                                AND season = '{season}' AND sec_or_meters IS NOT NULL
                                 ORDER BY min, sec_or_meters {order}
                                 Limit 1""")
         pr = pr.fetchall()[0]
@@ -240,7 +241,8 @@ class DB:
         self._start_connection()
         pr1= self.curr.execute(f"""SELECT min, sec_or_meters
                                     FROM Performances
-                                    WHERE athlete_id = '{athlete_id}' AND event_name = '{event_name}' AND season = '{season}'
+                                    WHERE athlete_id = '{athlete_id}' AND event_name = '{event_name}'
+                                    AND season = '{season}' AND sec_or_meters IS NOT NULL
                                     ORDER BY year, min, sec_or_meters {order}
                                     LIMIT 1""")
         pr1= pr1.fetchall()[0]

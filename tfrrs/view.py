@@ -40,17 +40,17 @@ class StartWindow(object):
         self.descriptionLabel = QLabel("This program will allow you to visualize athlete statistics in Cross Country or Track and Field. You will be prompted to select NCAA Division, Gender, College, Sport, and Event.",
                                         self.centralwidget)
         self.descriptionLabel.setWordWrap(True)
-        self.descriptionLabel.setFont(QFont("Open Sans", 30))
+        self.descriptionLabel.setFont(QFont("Arial"))
         self.descriptionLabel.setAlignment(Qt.AlignCenter)
         self.descriptionLabel.setGeometry(5,10,690,400)
-        self.descriptionLabel.setStyleSheet('QLabel {color: Blue}')
+        self.descriptionLabel.setStyleSheet('color: Blue; font-size: 30px}')
 
 #Button to continue to next window
         self.continueButton = QPushButton("Click here to continue", self.centralwidget)
         self.continueButton.setGeometry(5,450,690,30)
         #self.continueButton.setStyleSheet("background-color: Light gray;")
-        self.continueButton.setStyleSheet("background-color: Blue;  color: White;")
-        self.continueButton.setFont(QFont("Arial", 20))
+        self.continueButton.setStyleSheet("background-color: Blue;  color: White; font-size: 20px")
+        self.continueButton.setFont(QFont("Arial"))
 
         MainWindow.setCentralWidget(self.centralwidget)
 
@@ -455,8 +455,8 @@ class StatViewer(object):
         self.ath1 = QLabel(self.centralwidget)
         self.ath1.setText(f"{ath_name}'s Career Stats in the {season} {event_name}")
         self.ath1.setGeometry(75,75,550,30)
-        self.ath1.setStyleSheet('QLabel {font-weight: bold; color: Blue}')
-        self.ath1.setFont(QFont("Arial", 20))
+        self.ath1.setStyleSheet('QLabel {font-weight: bold; color: Blue; font-size: 20px}')
+        self.ath1.setFont(QFont("Arial"))
         self.ath1.setAlignment(Qt.AlignCenter)
 
         pr = db.get_athlete_pr(athlete_id, event_name, season)
