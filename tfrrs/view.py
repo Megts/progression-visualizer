@@ -99,8 +99,8 @@ class CollegeSelection(object):
         self.divisionLabel.setText('Division')
         self.divisionLabel.setGeometry(150,25,150,40)
         self.divisionLabel.setAlignment(Qt.AlignCenter)
-        self.divisionLabel.setStyleSheet('QLabel {color: Blue}')
-        self.divisionLabel.setFont(QFont("Arial", 20))
+        self.divisionLabel.setStyleSheet('QLabel {color: Blue; font-size: 20px}')
+        self.divisionLabel.setFont(QFont("Arial"))
 
 #Gender Selector
         self.gender= QComboBox(self.centralwidget)
@@ -108,7 +108,7 @@ class CollegeSelection(object):
         self.gender.addItem('Male')
         self.gender.addItem('Female')
         #self.gender.setStyleSheet("background-color: orange;")
-       # self.gender.setFont(QFont("Arial", 20))
+        #self.gender.setFont(QFont("Arial", 20))
         self.gender.setEditable(True)
         self.gender.setCurrentIndex(self.gen_i)
         self.line_edit = self.gender.lineEdit()
@@ -119,8 +119,8 @@ class CollegeSelection(object):
         self.genderLabel.setText('Gender')
         self.genderLabel.setGeometry(150,90,150,40)
         self.genderLabel.setAlignment(Qt.AlignCenter)
-        self.genderLabel.setStyleSheet('QLabel {color: Blue}')
-        self.genderLabel.setFont(QFont('Arial', 20))
+        self.genderLabel.setStyleSheet('QLabel {color: Blue; font-size: 20px}')
+        self.genderLabel.setFont(QFont('Arial'))
 
 #College Selector
         self.college= QComboBox(self.centralwidget)
@@ -140,8 +140,8 @@ class CollegeSelection(object):
         self.collegeLabel.setText('College')
         self.collegeLabel.setGeometry(150,155,150,40)
         self.collegeLabel.setAlignment(Qt.AlignCenter)
-        self.collegeLabel.setStyleSheet('QLabel {color: Blue}')
-        self.collegeLabel.setFont(QFont('Arial', 20))
+        self.collegeLabel.setStyleSheet('QLabel {color: Blue; font-size: 20px}')
+        self.collegeLabel.setFont(QFont('Arial'))
 
 #Athlete Selector
         self.athlete=QComboBox(self.centralwidget)
@@ -162,8 +162,8 @@ class CollegeSelection(object):
         self.athleteLabel.setAlignment(Qt.AlignCenter)
         self.athleteLabel.setGeometry(150,220,150,40)
         self.athleteLabel.setAlignment(Qt.AlignCenter)
-        self.athleteLabel.setStyleSheet('QLabel {color: Blue}')
-        self.athleteLabel.setFont(QFont("Arial", 20))
+        self.athleteLabel.setStyleSheet('QLabel {color: Blue; font-size: 20px}')
+        self.athleteLabel.setFont(QFont("Arial"))
 
 #Season Selector
         self.season= QComboBox(self.centralwidget)
@@ -182,8 +182,8 @@ class CollegeSelection(object):
         self.seasonLabel.setText('Season')
         self.seasonLabel.setGeometry(150,285,150,40)
         self.seasonLabel.setAlignment(Qt.AlignCenter)
-        self.seasonLabel.setStyleSheet('QLabel {color: Blue}')
-        self.seasonLabel.setFont(QFont("Arial", 20))
+        self.seasonLabel.setStyleSheet('QLabel {color: Blue; font-size: 20px}')
+        self.seasonLabel.setFont(QFont("Arial"))
 
 #Event Selector
         self.event= QComboBox(self.centralwidget)
@@ -202,8 +202,8 @@ class CollegeSelection(object):
         self.eventLabel.setText('Event')
         self.eventLabel.setGeometry(150,350,150,40)
         self.eventLabel.setAlignment(Qt.AlignCenter)
-        self.eventLabel.setStyleSheet('QLabel {color: Blue}')
-        self.eventLabel.setFont(QFont("Arial", 20))
+        self.eventLabel.setStyleSheet('QLabel {color: Blue; font-size: 20px}')
+        self.eventLabel.setFont(QFont("Arial"))
 
         MainWindow.setCentralWidget(self.centralwidget)
 
@@ -211,8 +211,8 @@ class CollegeSelection(object):
         self.updateButton= QPushButton(self.centralwidget)
         self.updateButton.setText("Plot Selected Event")
         self.updateButton.setGeometry(50,425,275,40)
-        self.updateButton.setStyleSheet("background-color: Blue;  color: White;")
-        self.updateButton.setFont(QFont("Arial", 20))
+        self.updateButton.setStyleSheet("background-color: Blue;  color: White; font-size: 20px")
+        self.updateButton.setFont(QFont("Arial"))
         #self.updateButton.setBackground(
         #self.updateButton.setStyleSheet('color: White;')
 
@@ -222,8 +222,8 @@ class CollegeSelection(object):
         self.statButton=QPushButton(self.centralwidget)
         self.statButton.setText("View Athlete Stats")
         self.statButton.setGeometry(375,425,275,40)
-        self.statButton.setStyleSheet("background-color: Blue;  color: White;")
-        self.statButton.setFont(QFont("Arial", 20))
+        self.statButton.setStyleSheet("background-color: Blue;  color: White; font-size: 20px")
+        self.statButton.setFont(QFont("Arial"))
 
         MainWindow.setCentralWidget(self.centralwidget)
 
@@ -370,8 +370,8 @@ class GraphViewer(object):
         self.backButton=QPushButton(self.centralwidget)
         self.backButton.setText("Back")
         self.backButton.setGeometry (25,435, 650, 40)
-        self.backButton.setStyleSheet("background-color: Blue;  color: White;")
-        self.backButton.setFont(QFont("Arial", 20))
+        self.backButton.setStyleSheet("background-color: Blue;  color: White; font-size: 20px")
+        self.backButton.setFont(QFont("Arial"))
 
         MainWindow.setCentralWidget(self.centralwidget)
 
@@ -443,13 +443,6 @@ class StatViewer(object):
         MainWindow.setStyleSheet("background-color: Light gray;")
         self.centralwidget = QWidget(MainWindow)
 
-#Statistics description label
-        '''self.statDescriptionLabel = QLabel(self.centralwidget)
-        self.statDescriptionLabel.setText("Statistics for Selected Athlete(s) and Event")
-        self.statDescriptionLabel.setGeometry(150,25,400,50)
-        self.statDescriptionLabel.setStyleSheet('QLabel {color: Orange}')
-        self.statDescriptionLabel.setFont(QFont("Arial", 20))'''
-
 #Athlete 1 Name and Stats
         ath_name = db.get_ahtlete_name(athlete_id)
         self.ath1 = QLabel(self.centralwidget)
@@ -494,33 +487,6 @@ class StatViewer(object):
         self.ath1Imp1.setGeometry(375,375,100,25)
         self.ath1Imp1.setAlignment(Qt.AlignCenter)
         self.ath1Imp1.setFont(QFont("Arial", 20))
-
-#Athlete 2 Name and Stats
-        '''self.ath2 =QLabel(self.centralwidget)
-        self.ath2.setText("Athlete 2 Goes Here")
-        self.ath2.setGeometry(475,100,150,25)
-        self.ath2.setStyleSheet('QLabel {font-weight: bold; color: Orange}')
-        self.ath2.setFont(QFont("Arial", 15))
-
-        self.ath2PR = QLabel(self.centralwidget)
-        self.ath2PR.setText("3.56")
-        self.ath2PR.setGeometry(475,150,150,25)
-        self.ath2PR.setAlignment(Qt.AlignCenter)
-
-        self.ath2PR1 = QLabel(self.centralwidget)
-        self.ath2PR1.setText("3.56")
-        self.ath2PR1.setGeometry(475,200,150,25)
-        self.ath2PR1.setAlignment(Qt.AlignCenter)
-
-        self.ath2Imp = QLabel(self.centralwidget)
-        self.ath2Imp.setText("3.56")
-        self.ath2Imp.setGeometry(475,250,150,25)
-        self.ath2Imp.setAlignment(Qt.AlignCenter)
-
-        self.ath2Imp1 = QLabel(self.centralwidget)
-        self.ath2Imp1.setText("3.56")
-        self.ath2Imp1.setGeometry(475,300,150,25)
-        self.ath2Imp1.setAlignment(Qt.AlignCenter)'''
 
 #Personal Best Label
         self.prLabel = QLabel(self.centralwidget)
@@ -592,13 +558,6 @@ class MainWindow(QMainWindow):
 
         self.show()
         print('Showing college selection')
-
-
-
-    '''def startAthleteSelection(self):
-        self.athleteSelection.setupAthleteSelection(self,self.collegeSelection.college_id)
-        self.athleteSelection.backButton.clicked.connect(self.startCollegeSelection)
-                self.show()'''
 
     def startGraphViewer(self):
         self.graphViewer.setupGraphViewer(self, [self.collegeSelection.ath_id], self.collegeSelection.event_picked, self.collegeSelection.season_picked)
