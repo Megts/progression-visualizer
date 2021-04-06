@@ -448,7 +448,7 @@ class StatViewer(object):
         self.ath1 = QLabel(self.centralwidget)
         self.ath1.setText(f"{ath_name}'s Career Stats in the {season} {event_name}")
         self.ath1.setGeometry(75,75,550,30)
-        self.ath1.setStyleSheet('QLabel {font-weight: bold; color: Blue; font-size: 20px}')
+        self.ath1.setStyleSheet('QLabel {font-size: 20px; font-weight: bold; color: Blue;}')
         self.ath1.setFont(QFont("Arial"))
         self.ath1.setAlignment(Qt.AlignCenter)
 
@@ -459,7 +459,8 @@ class StatViewer(object):
         self.ath1PR.setText(pr)
         self.ath1PR.setGeometry(375,150,100,25)
         self.ath1PR.setAlignment(Qt.AlignCenter)
-        self.ath1PR.setFont(QFont("Arial", 20))
+        self.ath1PR.setFont(QFont("Arial"))
+        self.ath1PR.setStyleSheet('QLabel {font-size: 20px}')
 
         pr1 = db.get_athlete_first_year_pr(athlete_id, event_name, season)
         if isinstance(pr1, timedelta64):
@@ -468,7 +469,8 @@ class StatViewer(object):
         self.ath1PR1.setText(pr1)
         self.ath1PR1.setGeometry(375,225,100,25)
         self.ath1PR1.setAlignment(Qt.AlignCenter)
-        self.ath1PR1.setFont(QFont("Arial", 20))
+        self.ath1PR1.setFont(QFont("Arial"))
+        self.ath1PR1.setStyleSheet('QLabel {font-size: 20px}')
 
         imp = db.get_athlete_overall_imp(athlete_id, event_name, season)
         if isinstance(imp, timedelta64):
@@ -477,7 +479,8 @@ class StatViewer(object):
         self.ath1Imp.setText(imp)
         self.ath1Imp.setGeometry(375,300,100,25)
         self.ath1Imp.setAlignment(Qt.AlignCenter)
-        self.ath1Imp.setFont(QFont("Arial", 20))
+        self.ath1Imp.setFont(QFont("Arial"))
+        self.ath1Imp.setStyleSheet('QLabel {font-size: 20px}')
 
         imp1 = db.get_athlete_first_year_imp(athlete_id, event_name, season)
         if isinstance(imp1, timedelta64):
@@ -486,35 +489,36 @@ class StatViewer(object):
         self.ath1Imp1.setText(imp1)
         self.ath1Imp1.setGeometry(375,375,100,25)
         self.ath1Imp1.setAlignment(Qt.AlignCenter)
-        self.ath1Imp1.setFont(QFont("Arial", 20))
+        self.ath1Imp1.setFont(QFont("Arial"))
+        self.ath1Imp1.setStyleSheet('QLabel {font-size: 20px}')
 
 #Personal Best Label
         self.prLabel = QLabel(self.centralwidget)
         self.prLabel.setText("Personal Best")
         self.prLabel.setGeometry(100,150,250,25)
-        self.prLabel.setStyleSheet('QLabel {font-weight: bold; color: Blue}')
-        self.prLabel.setFont(QFont("Arial", 20))
+        self.prLabel.setStyleSheet('QLabel {font-weight: bold; color: Blue; font-size: 20px;}')
+        self.prLabel.setFont(QFont("Arial"))
 
 #Personal Best 1st Year
         self.pr1Label = QLabel(self.centralwidget)
         self.pr1Label.setText("Season Best 1st Year")
         self.pr1Label.setGeometry(100,225,250,25)
-        self.pr1Label.setStyleSheet('QLabel {font-weight: bold; color: Blue}')
-        self.pr1Label.setFont(QFont("Arial", 20))
+        self.pr1Label.setStyleSheet('QLabel {font-weight: bold; color: Blue; font-size: 20px;}')
+        self.pr1Label.setFont(QFont("Arial"))
 
 #Improvement Overall
         self.OverallImpLabel = QLabel(self.centralwidget)
         self.OverallImpLabel.setText("Overall Improvement")
         self.OverallImpLabel.setGeometry(100,300,250,25)
-        self.OverallImpLabel.setStyleSheet('QLabel {font-weight: bold; color: Blue}')
-        self.OverallImpLabel.setFont(QFont("Arial", 20))
+        self.OverallImpLabel.setStyleSheet('QLabel {font-weight: bold; color: Blue; font-size: 20px;}')
+        self.OverallImpLabel.setFont(QFont("Arial"))
 
 #Improvement First Year
         self.Imp1Label= QLabel(self.centralwidget)
         self.Imp1Label.setText("Improvement 1st Year")
         self.Imp1Label.setGeometry(100,375,250,25)
-        self.Imp1Label.setStyleSheet('QLabel {font-weight: bold; color: Blue}')
-        self.Imp1Label.setFont(QFont("Arial", 20))
+        self.Imp1Label.setStyleSheet('QLabel {font-weight: bold; color: Blue; font-size: 20px;}')
+        self.Imp1Label.setFont(QFont("Arial"))
 
 
 #Button to go back to athlete selector window
@@ -522,8 +526,8 @@ class StatViewer(object):
         self.backButton.setText("Back")
         self.backButton.setGeometry(275,425,150,50)
         self.backButton.setGeometry (25,435, 650, 40)
-        self.backButton.setStyleSheet("background-color: Blue;  color: White;")
-        self.backButton.setFont(QFont("Arial", 20))
+        self.backButton.setStyleSheet("background-color: Blue;  color: White; font-size: 20px;")
+        self.backButton.setFont(QFont("Arial"))
 
         MainWindow.setCentralWidget(self.centralwidget)
 
@@ -557,7 +561,6 @@ class MainWindow(QMainWindow):
         self.collegeSelection.statButton.clicked.connect(self.startStatViewer)
 
         self.show()
-        print('Showing college selection')
 
     def startGraphViewer(self):
         self.graphViewer.setupGraphViewer(self, [self.collegeSelection.ath_id], self.collegeSelection.event_picked, self.collegeSelection.season_picked)
