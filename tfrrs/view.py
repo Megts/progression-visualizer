@@ -445,33 +445,45 @@ class StatViewer(object):
         self.statDescriptionLabel.setFont(QFont("Arial", 20))'''
 
 #Athlete 1 Name and Stats
+        ath_name = db.get_ahtlete_name(athlete_id)
         self.ath1 = QLabel(self.centralwidget)
-        self.ath1.setText("(Name)'s Career Stats in (Event)")
+        self.ath1.setText(f"{ath_name}'s Career Stats in the {season} {event_name}")
         self.ath1.setGeometry(75,75,550,30)
         self.ath1.setStyleSheet('QLabel {font-weight: bold; color: Blue}')
         self.ath1.setFont(QFont("Arial", 20))
         self.ath1.setAlignment(Qt.AlignCenter)
 
-        '''self.ath1PR = QLabel(self.centralwidget)
-        test = db.get_athlete_pr(self, athlete_id, event_name, season)
-        self.ath1PR.setText(test)
+        pr = db.get_athlete_pr(self, athlete_id, event_name, season)
+        if isinstance(pr, timedelta64):
+            pr = db.format_timedelta(pr)
+        self.ath1PR = QLabel(self.centralwidget)
+        self.ath1PR.setText(pr)
         self.ath1PR.setGeometry(75,150,150,25)
-        self.ath1PR.setAlignment(Qt.AlignCenter)'''
+        self.ath1PR.setAlignment(Qt.AlignCenter)
 
-        '''self.ath1PR1 = QLabel(self.centralwidget)
+        pr1 = db.get_athlete_first_year_pr(self, athlete_id, event_name, season)
+        if isinstance(pr1, timedelta64):
+            pr1 = db.format_timedelta(pr1)
+        self.ath1PR1 = QLabel(self.centralwidget)
         self.ath1PR1.setText("3.56")
         self.ath1PR1.setGeometry(75,200,150,25)
         self.ath1PR1.setAlignment(Qt.AlignCenter)
 
+        imp = db.get_athlete_overall_imp(self, athlete_id, event_name, season)
+        if isinstance(imp, timedelta64):
+            pr = db.format_timedelta(imp)
         self.ath1Imp = QLabel(self.centralwidget)
         self.ath1Imp.setText("3.56")
         self.ath1Imp.setGeometry(75,250,150,25)
         self.ath1Imp.setAlignment(Qt.AlignCenter)
 
+        imp1 = db.get_athlete_first_year_imp(self, athlete_id, event_name, season)
+        if isinstance(imp1, timedelta64):
+            imp1 = db.format_timedelta(imp1)
         self.ath1Imp1 = QLabel(self.centralwidget)
         self.ath1Imp1.setText("3.56")
         self.ath1Imp1.setGeometry(75,300,150,25)
-        self.ath1Imp1.setAlignment(Qt.AlignCenter)'''
+        self.ath1Imp1.setAlignment(Qt.AlignCenter)
 
 #Athlete 2 Name and Stats
         '''self.ath2 =QLabel(self.centralwidget)
