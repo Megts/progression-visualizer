@@ -5,7 +5,6 @@ import sqlite3
 from numpy import datetime64, timedelta64
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
-from tfrrs.spiders.testRunner import TFRRSspider
 
 class DB:
 
