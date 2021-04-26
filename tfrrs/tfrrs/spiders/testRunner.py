@@ -159,3 +159,16 @@ class TFRRSspider(scrapy.Spider):
     def log_error(self, error):
         with open('runner_log.txt', 'a') as f:
             f.write(error)
+
+class Updater(scrapy.Spider):
+    name = 'updater'
+    allowed_domains = ['tfrrs.org']
+
+    def __init__(self, **kw):
+        self.url = kw.get('url')
+        print(self.url)
+
+    def start_requests(self):
+        ts = TFRRSspider()
+        print('starting request')
+        return [scrapy.Request(self.url, callback = ts.parse_team_athletes)]

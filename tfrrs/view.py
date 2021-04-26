@@ -148,7 +148,12 @@ class CollegeSelection(object):
         self.athlete.setGeometry(350,220,175,40)
         self.athletes = db.get_init_team_roster(self.college_id)
         athlete_names = [name for name, id in self.athletes]
-        self.ath_id = self.athletes[self.athlete_i][1]
+        if len(self.athletes) > 0:
+            athlete_names = [name for name, id in self.athletes]
+            self.ath_id = self.athletes[self.athlete_i][1]
+        else:
+            athlete_names = []
+            self.ath_id = None
         self.athlete.addItems(athlete_names)
         #self.athlete.setStyleSheet("background-color: orange;")
         self.athlete.setEditable(True)
@@ -208,13 +213,13 @@ class CollegeSelection(object):
         MainWindow.setCentralWidget(self.centralwidget)
 
 #Update Button
-        self.updateButton= QPushButton(self.centralwidget)
-        self.updateButton.setText("Plot Selected Event")
-        self.updateButton.setGeometry(25,425,200,40)
-        self.updateButton.setStyleSheet("background-color: Blue;  color: White; font-size: 20px")
-        self.updateButton.setFont(QFont("Arial"))
-        #self.updateButton.setBackground(
-        #self.updateButton.setStyleSheet('color: White;')
+        self.graphButton= QPushButton(self.centralwidget)
+        self.graphButton.setText("Plot Selected Event")
+        self.graphButton.setGeometry(25,425,200,40)
+        self.graphButton.setStyleSheet("background-color: Blue;  color: White; font-size: 20px")
+        self.graphButton.setFont(QFont("Arial"))
+        #self.graphButton.setBackground(
+        #self.graphButton.setStyleSheet('color: White;')
 
         MainWindow.setCentralWidget(self.centralwidget)
 
@@ -234,8 +239,24 @@ class CollegeSelection(object):
         self.updateRoster.setStyleSheet("background-color: Blue;  color: White; font-size: 20px")
         self.updateRoster.setFont(QFont("Arial"))
 
+        self.toggle_buttons()
+
         MainWindow.setCentralWidget(self.centralwidget)
-        
+
+    def toggle_buttons(self):
+        print(self.ath_id, self.event_picked)
+        if self.event_picked == '':
+            self.graphButton.blockSignals(True)
+            self.statButton.blockSignals(True)
+            self.graphButton.setStyleSheet("background-color: Red;  color: White; font-size: 20px")
+            self.statButton.setStyleSheet("background-color: Red;  color: White; font-size: 20px")
+        else:
+            self.graphButton.blockSignals(False)
+            self.statButton.blockSignals(False)
+            self.graphButton.setStyleSheet("background-color: Blue;  color: White; font-size: 20px")
+            self.statButton.setStyleSheet("background-color: Blue;  color: White; font-size: 20px")
+
+
     def divisionchange(self,i):
         if i != -1:
             self.div_i = i
@@ -283,11 +304,14 @@ class CollegeSelection(object):
         self.update_athletes()
 
     def update_athletes(self):
-        print(self.college_id)
         self.athletes = db.get_init_team_roster(self.college_id)
-        athlete_names = [name for name, id in self.athletes]
-        self.athlete_i = 0
-        self.ath_id = self.athletes[self.athlete_i][1]
+        if len(self.athletes) > 0:
+            athlete_names = [name for name, id in self.athletes]
+            self.athlete_i = 0
+            self.ath_id = self.athletes[self.athlete_i][1]
+        else:
+            athlete_names = []
+            self.ath_id = None
         self.athlete.clear()
         self.athlete.addItems(athlete_names)
         self.update_seasons()
@@ -306,6 +330,12 @@ class CollegeSelection(object):
         self.event.addItems(events)
         self.event_i = 0
         self.event_picked = self.event.currentText()
+        self.toggle_buttons()
+
+    def update_roster(self):
+        db.update_college_roster(self.college_id)
+        self.update_athletes()
+        self.updateRoster.blockSignals(True)
 
 
 
@@ -562,7 +592,8 @@ class MainWindow(QMainWindow):
         self.collegeSelection.gender.currentIndexChanged.connect(self.collegeSelection.genderchange)
         self.collegeSelection.division.currentIndexChanged.connect(self.collegeSelection.divisionchange)
         self.collegeSelection.college.currentIndexChanged.connect(self.collegeSelection.collegechange)
-        self.collegeSelection.updateButton.clicked.connect(self.startGraphViewer)
+        self.collegeSelection.graphButton.clicked.connect(self.startGraphViewer)
+        self.collegeSelection.updateRoster.clicked.connect(self.collegeSelection.update_roster)
         self.collegeSelection.season.currentIndexChanged.connect(self.collegeSelection.seasonChange)
         self.collegeSelection.event.currentIndexChanged.connect(self.collegeSelection.eventChange)
         self.collegeSelection.athlete.currentIndexChanged.connect(self.collegeSelection.athleteChange)
@@ -571,15 +602,20 @@ class MainWindow(QMainWindow):
         self.show()
 
     def startGraphViewer(self):
-        self.graphViewer.setupGraphViewer(self, [self.collegeSelection.ath_id], self.collegeSelection.event_picked, self.collegeSelection.season_picked)
-        self.graphViewer.backButton.clicked.connect(self.startCollegeSelection)
-
-        self.show()
+        if self.collegeSelection.ath_id != None:
+            self.graphViewer.setupGraphViewer(self, [self.collegeSelection.ath_id], self.collegeSelection.event_picked, self.collegeSelection.season_picked)
+            self.graphViewer.backButton.clicked.connect(self.startCollegeSelection)
+            self.show()
+        else:
+            self.startCollegeSelection()
 
     def startStatViewer(self):
-        self.statViewer.setupStatViewer(self, self.collegeSelection.ath_id, self.collegeSelection.event_picked, self.collegeSelection.season_picked)
-        self.statViewer.backButton.clicked.connect(self.startCollegeSelection)
-        self.show()
+        if self.collegeSelection.ath_id != None:
+            self.statViewer.setupStatViewer(self, self.collegeSelection.ath_id, self.collegeSelection.event_picked, self.collegeSelection.season_picked)
+            self.statViewer.backButton.clicked.connect(self.startCollegeSelection)
+            self.show()
+        else:
+            self.startCollegeSelection()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

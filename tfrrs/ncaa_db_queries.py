@@ -3,6 +3,9 @@
 
 import sqlite3
 from numpy import datetime64, timedelta64
+from scrapy.crawler import CrawlerProcess
+from scrapy.utils.project import get_project_settings
+from tfrrs.spiders.testRunner import TFRRSspider
 
 class DB:
 
@@ -116,7 +119,7 @@ class DB:
     def get_athlete_results(self,athlete_id,event_name,season):
         print(athlete_id,event_name,season)
         self._start_connection()
-        performances = self.curr.execute("""SELECT min,sec_or_meters,wind_legal2,wind_legal4,day,month,year
+        performances = self.curr.execute("""SELECT minutes,sec_or_meters,wind_legal2,wind_legal4,day,month,year
                                           FROM Performances
                                           WHERE athlete_id = ? AND event_name = ? AND season = ?
                                           ORDER BY year, month, day""", (
@@ -195,7 +198,7 @@ class DB:
         return datetime64(f'2000-01-01T00:{self._2digs(min)}:{self._2digs(sec)}.{hundreth}')
 
     def _date_to_2000_dt(self,year,month,day, season_year):
-        dt = datetime64(f'{year}-{self._2digs(month+1)}-{self._2digs(day)}')
+        dt = datetime64(f'{year}-{self._2digs(month)}-{self._2digs(day)}')
         td = datetime64(f'{season_year}-01-01')-datetime64('2000-01-01')
         return dt - td
 
@@ -223,11 +226,11 @@ class DB:
         else:
             order = """ASC"""
         self._start_connection()
-        pr = self.curr.execute(f"""SELECT min, sec_or_meters
+        pr = self.curr.execute(f"""SELECT minutes, sec_or_meters
                                 FROM Performances
                                 WHERE athlete_id = '{athlete_id}' AND event_name = '{event_name}'
                                 AND season = '{season}' AND sec_or_meters IS NOT NULL
-                                ORDER BY min, sec_or_meters {order}
+                                ORDER BY minutes, sec_or_meters {order}
                                 Limit 1""")
         pr = pr.fetchall()[0]
         min, sec = pr
@@ -245,11 +248,11 @@ class DB:
         else:
             order = 'ASC'
         self._start_connection()
-        pr1= self.curr.execute(f"""SELECT min, sec_or_meters
+        pr1= self.curr.execute(f"""SELECT minutes, sec_or_meters
                                     FROM Performances
                                     WHERE athlete_id = '{athlete_id}' AND event_name = '{event_name}'
                                     AND season = '{season}' AND sec_or_meters IS NOT NULL
-                                    ORDER BY year, min, sec_or_meters {order}
+                                    ORDER BY year, minutes, sec_or_meters {order}
                                     LIMIT 1""")
         pr1= pr1.fetchall()[0]
         min, sec = pr1
@@ -264,7 +267,7 @@ class DB:
     def get_athlete_first_performance(self, athlete_id, event_name, season):
         units = self._get_units(event_name)
         self._start_connection()
-        first = self.curr.execute("""SELECT min, sec_or_meters
+        first = self.curr.execute("""SELECT minutes, sec_or_meters
                                         FROM Performances
                                         WHERE athlete_id = ? AND event_name = ? AND season = ?
                                         ORDER BY year asc, month asc, day
@@ -284,7 +287,7 @@ class DB:
 
 #Returns selected athletes overall improvment
     def get_athlete_overall_imp(self, athlete_id, event_name,season):
-        first_year = self.get_athlete_first_year_pr(athlete_id, event_name, season)
+        first_year = self.get_athlete_first_performance(athlete_id, event_name, season)
         pr = self.get_athlete_pr(athlete_id, event_name, season)
         improvement = abs(first_year - pr)
         if  isinstance(improvement,float):
@@ -316,3 +319,10 @@ class DB:
             units = 'Meters'
         self._close_connection()
         return units
+
+    def update_college_roster(self, college_id):
+        team_url = 'https://tfrrs.org/teams/'+college_id+'.html'
+        print(team_url)
+        process = CrawlerProcess(get_project_settings())
+        process.crawl('updater', url = team_url)
+        process.start()

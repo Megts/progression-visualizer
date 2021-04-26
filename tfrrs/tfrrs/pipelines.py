@@ -29,46 +29,52 @@ class TfrrsPipeline:
 
     def create_col_table(self):
         # dropping table for now
-        self.curr.execute("""DROP TABLE IF EXISTS Colleges""")
-        self.curr.execute("""CREATE TABLE Colleges(
-                            college_id TEXT,
-                            name TEXT,
-                            division INTEGER,
-                            gender TEXT,
-                            PRIMARY KEY (college_id)
-                            )""")
-        self.conn.commit()
+        try:
+            self.curr.execute("""CREATE TABLE IF NOT EXISTS Colleges(
+                                college_id TEXT,
+                                name TEXT,
+                                division INTEGER,
+                                gender TEXT,
+                                PRIMARY KEY (college_id)
+                                )""")
+            self.conn.commit()
+        except:
+            pass
 
     def create_athlete_table(self):
-        # dropping table for now
-        self.curr.execute("""DROP TABLE IF EXISTS Athletes""")
-        self.curr.execute("""CREATE TABLE Athletes(
-                            athlete_id INTEGER,
-                            first_name TEXT,
-                            last_name TEXT,
-                            college_id TEXT,
-                            PRIMARY KEY (athlete_id),
-                            FOREIGN KEY (college_id)
-                                REFERENCES Colleges (college_id)
-                            )""")
+        try:
+            self.curr.execute("""CREATE TABLE IF NOT EXISTS Athletes(
+                                athlete_id INTEGER,
+                                first_name TEXT,
+                                last_name TEXT,
+                                college_id TEXT,
+                                PRIMARY KEY (athlete_id),
+                                FOREIGN KEY (college_id)
+                                    REFERENCES Colleges (college_id)
+                                )""")
+            self.conn.commit()
+        except:
+            pass
 
     def create_performance_table(self):
-        self.curr.execute("""DROP TABLE IF EXISTS Performances""")
-        self.curr.execute("""CREATE TABLE Performances(
-                            athlete_id INTEGER,
-                            event_name TEXT,
-                            minutes INTEGER,
-                            sec_or_meters REAL,
-                            time_or_dist TEXT,
-                            wind_legal2 INTEGER,
-                            wind_legal4 INTEGER,
-                            day INTEGER,
-                            month INTEGER,
-                            year INTEGER,
-                            season TEXT,
-                            UNIQUE(athlete_id,event_name,day,month,year,sec_or_meters)
-                            )""")
-        self.conn.commit()
+        try:
+            self.curr.execute("""CREATE TABLE IF NOT EXISTS Performances(
+                                athlete_id INTEGER,
+                                event_name TEXT,
+                                minutes INTEGER,
+                                sec_or_meters REAL,
+                                time_or_dist TEXT,
+                                wind_legal2 INTEGER,
+                                wind_legal4 INTEGER,
+                                day INTEGER,
+                                month INTEGER,
+                                year INTEGER,
+                                season TEXT,
+                                CONSTRAINT unq UNIQUE(athlete_id,event_name,day,month,year,sec_or_meters)
+                                )""")
+            self.conn.commit()
+        except:
+            pass
 
     def process_item(self, item, spider):
         if isinstance(item, TeamItem):
